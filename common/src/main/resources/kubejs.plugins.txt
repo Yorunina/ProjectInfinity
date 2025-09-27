@@ -1,0 +1,1 @@
+net.lerariemann.infinity.compat.kubejs.Plugin

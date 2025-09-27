@@ -1,5 +1,6 @@
 package net.lerariemann.infinity;
 
+import dev.architectury.platform.Platform;
 import net.lerariemann.infinity.access.MinecraftServerAccess;
 import net.lerariemann.infinity.dimensions.RandomText;
 import net.lerariemann.infinity.registry.core.*;
@@ -22,6 +23,7 @@ public class InfinityMod {
 	public static Path configPath = PlatformMethods.getConfigPath();
 	public static Path utilPath = configPath.resolve(".util");
 	public static Path invocationLock = configPath.resolve("modular/invocation.lock");
+	public static boolean KUBEJS_LOADED = false;
 
 	public static Path rootConfigPathInJar;
 	public static RandomProvider provider;
@@ -57,6 +59,9 @@ public class InfinityMod {
 		ModStats.registerStats();
 		ModCriteria.registerCriteria();
 		RandomText.walkPaths();
+		if (Platform.isModLoaded("kubejs")) {
+			KUBEJS_LOADED = true;
+		}
 		provider = new RandomProvider();
 	}
 }

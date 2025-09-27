@@ -40,6 +40,8 @@ dependencies {
     modApi "me.shedaniel.cloth:cloth-config-forge:${project.cloth_version}"
     modImplementation "dev.su5ed.sinytra.fabric-api:fabric-api:${forgified_fabric_api_version}"
     modImplementation "dev.architectury:architectury-forge:$rootProject.architectury_api_version"
+    modImplementation "curse.maven:rhino-416294:6186971"
+    modImplementation "curse.maven:kubejs-forge-238086:5853326"
 
     // Create
     modCompileOnly("com.simibubi.create:create-$minecraft_version:$create_forge_version:slim") { transitive = false }
@@ -61,6 +63,13 @@ repositories {
     maven { url "https://maven.shedaniel.me/" }
     maven {
         url "https://maven.su5ed.dev/releases"
+    }
+    maven {
+        name = "Curse maven"
+        url = "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
     }
     exclusiveContent {
         forRepository {

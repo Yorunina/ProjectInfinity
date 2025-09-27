@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.lerariemann.infinity.InfinityMod;
 import net.lerariemann.infinity.access.Timebombable;
 import net.lerariemann.infinity.block.entity.InfinityPortalBlockEntity;
+import net.lerariemann.infinity.compat.kubejs.Events;
 import net.lerariemann.infinity.dimensions.RandomDimension;
 import net.lerariemann.infinity.registry.core.ModComponentTypes;
 import net.lerariemann.infinity.registry.core.ModItemFunctions;
@@ -215,7 +216,7 @@ public class InfinityPortalBlock extends NetherPortalBlock implements BlockEntit
                 else {
                     Timebombable tw = (Timebombable)world1;
                     if (tw.infinity$isTimebombed() && tw.infinity$tryRestore()) {
-                        new RandomDimension(ipbe.getDimension(), server);
+                        RandomDimension d = Events.postInfinityDimAdded(server, ipbe.getDimension());
                         PortalCreator.openWithStatIncrease(player, server, world, pos);
                     }
                 }

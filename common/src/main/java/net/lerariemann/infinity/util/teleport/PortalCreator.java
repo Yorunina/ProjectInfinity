@@ -1,27 +1,27 @@
 package net.lerariemann.infinity.util.teleport;
 
-import dev.architectury.platform.Platform;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.lerariemann.infinity.InfinityMod;
 import net.lerariemann.infinity.access.MinecraftServerAccess;
 import net.lerariemann.infinity.block.custom.Boopable;
-import net.lerariemann.infinity.registry.core.ModBlocks;
 import net.lerariemann.infinity.block.custom.InfinityPortalBlock;
 import net.lerariemann.infinity.block.entity.InfinityPortalBlockEntity;
 import net.lerariemann.infinity.compat.CreateCompat;
+import net.lerariemann.infinity.compat.kubejs.Events;
 import net.lerariemann.infinity.dimensions.RandomDimension;
+import net.lerariemann.infinity.options.PortalColorApplier;
+import net.lerariemann.infinity.registry.core.ModBlocks;
 import net.lerariemann.infinity.registry.core.ModItems;
+import net.lerariemann.infinity.registry.var.ModCriteria;
+import net.lerariemann.infinity.registry.var.ModPayloads;
+import net.lerariemann.infinity.registry.var.ModSounds;
+import net.lerariemann.infinity.registry.var.ModStats;
 import net.lerariemann.infinity.util.BackportMethods;
 import net.lerariemann.infinity.util.InfinityMethods;
 import net.lerariemann.infinity.util.PlatformMethods;
 import net.lerariemann.infinity.util.core.CommonIO;
 import net.lerariemann.infinity.util.core.RandomProvider;
 import net.lerariemann.infinity.util.loading.DimensionGrabber;
-import net.lerariemann.infinity.options.PortalColorApplier;
-import net.lerariemann.infinity.registry.var.ModCriteria;
-import net.lerariemann.infinity.registry.var.ModPayloads;
-import net.lerariemann.infinity.registry.var.ModSounds;
-import net.lerariemann.infinity.registry.var.ModStats;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.NetherPortalBlock;
@@ -55,11 +55,12 @@ import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import static net.lerariemann.infinity.compat.ComputerCraftCompat.checkPrintedPage;
 import static net.lerariemann.infinity.util.InfinityMethods.isCreateLoaded;
 
 public interface PortalCreator {
@@ -81,40 +82,7 @@ public interface PortalCreator {
                 }
             }
         }
-        else if (itemStack.getItem() == Items.WRITTEN_BOOK || itemStack.getItem() == Items.WRITABLE_BOOK) {
-            NbtCompound compound = itemStack.getNbt();
-            String content;
-            if (compound != null) {
-                content = parseComponents(compound, itemStack.getItem());
-            }
-            else content = "";
-            MinecraftServer server = world.getServer();
-            if (server != null) {
-                Identifier id = InfinityMethods.dimTextToId(content);
-                if (world instanceof ServerWorld serverWorld) {
-                    boolean bl = modifyOnInitialCollision(id, serverWorld, pos);
-                    if (bl) entity.remove(Entity.RemovalReason.CHANGED_DIMENSION);
-                    recordIdTranslation(world.getServer(), id, content);
-                }
-            }
-        }
-        else if (Platform.isModLoaded("computercraft")) {
-            try {
-                String content;
-                content = checkPrintedPage(itemStack);
-                MinecraftServer server = world.getServer();
-                if (server != null) {
-                    Identifier id = InfinityMethods.dimTextToId(content);
-                    if (world instanceof ServerWorld serverWorld) {
-                        boolean bl = modifyOnInitialCollision(id, serverWorld, pos);
-                        if (bl) entity.remove(Entity.RemovalReason.CHANGED_DIMENSION);
-                        recordIdTranslation(world.getServer(), id, content);
-                    }
-                }
-            } catch (Exception e) {
-                InfinityMod.LOGGER.warn("An incompatible version of ComputerCraft is present. Please update it to the latest version");
-            }
-        }
+        Events.postItemInNetherPortal(world, pos, entity);
     }
 
     /**
@@ -271,7 +239,7 @@ public interface PortalCreator {
         if (w!=null) return false;
 
         /* creates the dimension datapack */
-        RandomDimension d = new RandomDimension(id, server);
+        RandomDimension d = Events.postInfinityDimAdded(server, id);
 
         if (!RandomProvider.rule("runtimeGenerationEnabled")) return false;
         ((MinecraftServerAccess)(server)).infinity$addWorld(

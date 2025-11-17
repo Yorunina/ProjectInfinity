@@ -25,11 +25,6 @@ forgix {
         jarLocation = "build/libs/infinity-forge-${version}.jar"
     }
 
-    fabric {
-        projectName = "fabric"
-        jarLocation = "build/libs/infinity-fabric-${version}.jar"
-    }
-
 }
 wiki {
     docs {
@@ -47,7 +42,6 @@ subprojects {
     apply plugin: 'maven-publish'
 
     base {
-        // Set up a suffixed format for the mod jar names, e.g. `example-fabric`.
         archivesName = "$rootProject.archives_name-$project.name"
     }
 

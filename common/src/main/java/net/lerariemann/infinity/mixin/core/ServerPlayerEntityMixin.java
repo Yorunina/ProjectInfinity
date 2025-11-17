@@ -1,7 +1,6 @@
 package net.lerariemann.infinity.mixin.core;
 
 import com.mojang.authlib.GameProfile;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.lerariemann.infinity.registry.var.ModPayloads;
 import net.lerariemann.infinity.util.PlatformMethods;
 import net.lerariemann.infinity.access.Timebombable;
@@ -9,11 +8,11 @@ import net.lerariemann.infinity.access.ServerPlayerEntityAccess;
 import net.lerariemann.infinity.options.InfinityOptions;
 import net.lerariemann.infinity.util.InfinityMethods;
 import net.lerariemann.infinity.util.teleport.WarpLogic;
-import net.lerariemann.infinity.registry.var.ModPayloads;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
@@ -74,7 +73,8 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Se
     private void injected5(ServerWorld targetWorld, double x, double y, double z, float yaw, float pitch, CallbackInfo ci) {
         ServerPlayerEntity player = (ServerPlayerEntity)(Object)this;
         ModPayloads.sendReloadPacket(player, targetWorld);
-        ServerPlayNetworking.send(player, ModPayloads.STARS_RELOAD, PlatformMethods.createPacketByteBufs());
+        PacketByteBuf buf = PlatformMethods.createPacketByteBufs();
+        PlatformMethods.sendToPlayer(player, ModPayloads.STARS_RELOAD, buf);
         this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(getAbilities()));
         for(StatusEffectInstance effect: getStatusEffects())
             networkHandler.sendPacket(new EntityStatusEffectS2CPacket(getId(), effect));

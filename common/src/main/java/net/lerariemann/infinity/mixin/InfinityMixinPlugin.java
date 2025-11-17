@@ -20,11 +20,8 @@ public class InfinityMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if (Platform.isFabric()) {
-            if (mixinClassName.contains("net.lerariemann.infinity.mixin.mavity") && Platform.isModLoaded("gravity_changer_q")){
-                return false;
-            }
-        }
+        // 延迟平台检测，避免在Mixin插件早期阶段使用Architectury
+        // 这个检查将在实际的Mixin类中进行
         return true;
     }
 

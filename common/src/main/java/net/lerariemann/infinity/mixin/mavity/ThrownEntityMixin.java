@@ -1,5 +1,6 @@
 package net.lerariemann.infinity.mixin.mavity;
 
+import dev.architectury.platform.Platform;
 import net.lerariemann.infinity.access.MavityInterface;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -20,6 +21,10 @@ public abstract class ThrownEntityMixin extends ProjectileEntity implements Mavi
 
     @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/thrown/ThrownEntity;getGravity()F"))
     protected float getGravity(ThrownEntity instance) {
-        return (float)getMavity() * getGravity();
+        // 只在Fabric平台且gravity_changer_q未加载时应用
+        if (Platform.isFabric() && !Platform.isModLoaded("gravity_changer_q")) {
+            return (float)getMavity() * getGravity();
+        }
+        return getGravity();
     }
 }

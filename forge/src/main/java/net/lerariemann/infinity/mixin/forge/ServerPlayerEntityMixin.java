@@ -1,16 +1,16 @@
 package net.lerariemann.infinity.mixin.forge;
 
 import com.mojang.authlib.GameProfile;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.lerariemann.infinity.access.ServerPlayerEntityAccess;
 import net.lerariemann.infinity.registry.var.ModPayloads;
 import net.lerariemann.infinity.registry.var.ModStats;
+import net.lerariemann.infinity.util.PlatformMethods;
 import net.lerariemann.infinity.util.teleport.PortalCreator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -51,7 +51,8 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Se
     private void changeDimensionReload(ServerWorld destination, ITeleporter teleporter, CallbackInfoReturnable<Entity> cir) {
         ServerPlayerEntity player = (ServerPlayerEntity)(Object)this;
         ModPayloads.sendReloadPacket(player, destination);
-        ServerPlayNetworking.send(player, ModPayloads.STARS_RELOAD, PacketByteBufs.create());
+        PacketByteBuf buf = PlatformMethods.createPacketByteBufs();
+        PlatformMethods.sendToPlayer(player, ModPayloads.STARS_RELOAD, buf);
     }
 
 

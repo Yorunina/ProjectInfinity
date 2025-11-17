@@ -87,8 +87,7 @@ public interface InfinityMethods {
      * like Item Descriptions or Cloth Config.
      */
     static boolean isFabricApiLoaded(String modID) {
-        if (Platform.isFabric()) return Platform.isModLoaded(modID.replace("_", "-"));
-        else return Platform.isModLoaded(modID.replace("-", "_"));
+        return PlatformMethods.isFabricApiLoaded(modID);
     }
 
     static double sample(int x, int y, int z) {

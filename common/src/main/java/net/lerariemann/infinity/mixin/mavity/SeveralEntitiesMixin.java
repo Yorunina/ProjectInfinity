@@ -1,5 +1,6 @@
 package net.lerariemann.infinity.mixin.mavity;
 
+import dev.architectury.platform.Platform;
 import net.lerariemann.infinity.access.MavityInterface;
 import net.minecraft.entity.*;
 import net.minecraft.entity.projectile.LlamaSpitEntity;
@@ -17,6 +18,10 @@ public abstract class SeveralEntitiesMixin extends Entity implements MavityInter
 
     @ModifyArg(method = "tick", at = @At(value="INVOKE", target="Lnet/minecraft/util/math/Vec3d;add(DDD)Lnet/minecraft/util/math/Vec3d;"), index = 1)
     double injected(double x) {
-        return getMavity() * x;
+        // 只在Fabric平台且gravity_changer_q未加载时应用
+        if (Platform.isFabric() && !Platform.isModLoaded("gravity_changer_q")) {
+            return getMavity() * x;
+        }
+        return x;
     }
 }

@@ -1,12 +1,12 @@
 package net.lerariemann.infinity.util.screen;
 
 import dev.architectury.registry.menu.ExtendedMenuProvider;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.lerariemann.infinity.item.F4Item;
 import net.lerariemann.infinity.registry.core.ModComponentTypes;
 import net.lerariemann.infinity.registry.var.ModPayloads;
 import net.lerariemann.infinity.registry.var.ModScreenHandlers;
 import net.lerariemann.infinity.util.BackportMethods;
+import net.lerariemann.infinity.util.PlatformMethods;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -61,7 +61,9 @@ public class F4ScreenHandler extends ScreenHandler {
         playerInventory.setStack(slot, st);
         super.onClosed(player);
         if (player instanceof ClientPlayerEntity) {
-            ClientPlayNetworking.send(new ModPayloads.F4UpdatingValuesPacket(slot, width.get(), height.get()));
+            PacketByteBuf buf = PlatformMethods.createPacketByteBufs();
+            new ModPayloads.F4UpdatingValuesPacket(slot, width.get(), height.get()).write(buf);
+            PlatformMethods.sendToClient(ModPayloads.UPDATE_F4, buf);
         }
     }
 

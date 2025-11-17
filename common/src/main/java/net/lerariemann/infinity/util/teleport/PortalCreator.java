@@ -1,6 +1,5 @@
 package net.lerariemann.infinity.util.teleport;
 
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.lerariemann.infinity.InfinityMod;
 import net.lerariemann.infinity.access.MinecraftServerAccess;
 import net.lerariemann.infinity.block.custom.Boopable;
@@ -253,7 +252,7 @@ public interface PortalCreator {
      * Create and send S2C packets necessary for the client to process a freshly added dimension.
      */
     static void sendNewWorld(ServerPlayerEntity player, Identifier id, RandomDimension d) {
-        ServerPlayNetworking.send(player, ModPayloads.WORLD_ADD, buildPacket(id, d));
+        PlatformMethods.sendToPlayer(player, ModPayloads.WORLD_ADD, buildPacket(id, d));
     }
 
     /* Create and send S2C packets necessary for the client to process a freshly added dimension. */

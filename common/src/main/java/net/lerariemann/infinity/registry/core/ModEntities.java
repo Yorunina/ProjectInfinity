@@ -5,7 +5,7 @@ import dev.architectury.registry.client.level.entity.EntityRendererRegistry;
 import dev.architectury.registry.level.entity.EntityAttributeRegistry;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+
 import net.lerariemann.infinity.entity.client.*;
 import net.lerariemann.infinity.entity.custom.*;
 import net.lerariemann.infinity.util.InfinityMethods;
@@ -44,10 +44,10 @@ public class ModEntities {
     public static final DeferredRegister<EntityType<?>> INFINITY_ENTITIES = DeferredRegister.create(MOD_ID, RegistryKeys.ENTITY_TYPE);
 
     public static final RegistrySupplier<EntityType<ChaosSlime>> CHAOS_SLIME = INFINITY_ENTITIES
-            .register("chaos_slime", () -> FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, ChaosSlime::new)
-                    .dimensions(EntityDimensions.changing(0.52f, 0.52f))
-                    .trackRangeBlocks(10)
-                    .build());
+            .register("chaos_slime", () -> EntityType.Builder.create(ChaosSlime::new, SpawnGroup.MONSTER)
+                    .setDimensions(0.52f, 0.52f)
+                    .maxTrackingRange(10)
+                    .build(type("chaos_slime")));
     public static final RegistrySupplier<EntityType<ChaosSkeleton>> CHAOS_SKELETON = INFINITY_ENTITIES
             .register("chaos_skeleton", () -> EntityType.Builder.create(ChaosSkeleton::new, SpawnGroup.MONSTER)
                     .setDimensions(0.6f, 1.99f)

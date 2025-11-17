@@ -76,7 +76,9 @@ public class RandomProvider {
     }
     private int _ruleInt(String key) {
         if (gameRulesInt.containsKey(key)) return gameRulesInt.get(key);
-        return (gameRulesDouble.get(key)).intValue();
+        Double value = gameRulesDouble.get(key);
+        if (value != null) return value.intValue();
+        return -1; // 默认值，与ruleInt方法的默认值保持一致
     }
 
     public String randomName(Random random, String key) {

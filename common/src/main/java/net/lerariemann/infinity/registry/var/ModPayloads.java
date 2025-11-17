@@ -1,11 +1,6 @@
 package net.lerariemann.infinity.registry.var;
 
 import dev.architectury.platform.Platform;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.FabricPacket;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.PacketType;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.lerariemann.infinity.iridescence.Iridescence;
 import net.lerariemann.infinity.item.F4Item;
 import net.lerariemann.infinity.registry.core.ModComponentTypes;
@@ -54,11 +49,11 @@ public class ModPayloads {
         return buf;
     }
     public static void sendReloadPacket(ServerPlayerEntity player, ServerWorld world) {
-        ServerPlayNetworking.send(player, ModPayloads.SHADER_RELOAD,
-                ModPayloads.buildPacket(world, player));
+        PacketByteBuf buf = buildPacket(world, player);
+        PlatformMethods.sendToPlayer(player, ModPayloads.SHADER_RELOAD, buf);
     }
 
-    public static void receiveShader(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+    public static void receiveShader(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf) {
         if (buf.readBoolean()) {
             client.execute(() -> ShaderLoader.reloadShaders(client, true, true));
             return;
@@ -82,23 +77,23 @@ public class ModPayloads {
 
     public static boolean resourcesReloaded = Path.of(Platform.getGameFolder() + "/resourcepacks/infinity/assets/infinity/shaders").toFile().exists();
 
-    public static void receiveStars(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+    public static void receiveStars(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf) {
         ((WorldRendererAccess)(client.worldRenderer)).infinity$setNeedsStars(true);
     }
 
-    public static class F4DeployingPacket implements FabricPacket {
-        @Override
-        public void write(PacketByteBuf buf) {
+    public static class F4DeployingPacket {
+        public static final Identifier ID = DEPLOY_F4;
+        
+        public static F4DeployingPacket fromBuf(PacketByteBuf buf) {
+            return new F4DeployingPacket();
         }
-        public static PacketType<F4DeployingPacket> type =
-                PacketType.create(DEPLOY_F4, buf -> new F4DeployingPacket());
-        @Override
-        public PacketType<?> getType() {
-            return type;
+        
+        public void write(PacketByteBuf buf) {
         }
     }
 
-    public static class F4UpdatingValuesPacket implements FabricPacket {
+    public static class F4UpdatingValuesPacket {
+        public static final Identifier ID = UPDATE_F4;
         int slot;
         int width;
         int height;
@@ -109,24 +104,20 @@ public class ModPayloads {
             height = h;
         }
 
-        public static PacketType<F4UpdatingValuesPacket> type =
-                PacketType.create(UPDATE_F4, buf -> new F4UpdatingValuesPacket(buf.readInt(), buf.readInt(), buf.readInt()));
+        public static F4UpdatingValuesPacket fromBuf(PacketByteBuf buf) {
+            return new F4UpdatingValuesPacket(buf.readInt(), buf.readInt(), buf.readInt());
+        }
 
-        @Override
         public void write(PacketByteBuf buf) {
             buf.writeInt(slot);
             buf.writeInt(width);
             buf.writeInt(height);
         }
-
-        @Override
-        public PacketType<?> getType() {
-            return type;
-        }
     }
 
     public static void registerC2SPacketsReceivers() {
-        ServerPlayNetworking.registerGlobalReceiver(F4UpdatingValuesPacket.type, (packet, player, responseSender) -> {
+        PlatformMethods.registerServerPacketReceiver(F4UpdatingValuesPacket.ID, (buf, player) -> {
+            F4UpdatingValuesPacket packet = F4UpdatingValuesPacket.fromBuf(buf);
             ItemStack st = player.getInventory().getStack(packet.slot).copy();
             if (st.isOf(ModItems.F4.get())) {
                 NbtCompound nbt = st.getNbt();
@@ -137,14 +128,15 @@ public class ModPayloads {
                 player.getInventory().setStack(packet.slot, st);
             }
         });
-        ServerPlayNetworking.registerGlobalReceiver(F4DeployingPacket.type, (packet, player, responseSender) -> {
+        PlatformMethods.registerServerPacketReceiver(F4DeployingPacket.ID, (buf, player) -> {
             TypedActionResult<ItemStack> result = F4Item.deploy(player.getServerWorld(), player, Hand.MAIN_HAND);
             player.setStackInHand(Hand.MAIN_HAND, result.getValue());
         });
     }
 
     public static void registerS2CPacketsReceivers() {
-        ClientPlayNetworking.registerGlobalReceiver(ModPayloads.WORLD_ADD, (client, handler, buf, responseSender) -> {
+        PlatformMethods.registerClientPacketReceiver(ModPayloads.WORLD_ADD, (buf) -> {
+            MinecraftClient client = MinecraftClient.getInstance();
             Identifier id = buf.readIdentifier();
             NbtCompound optiondata = buf.readNbt();
             int i = buf.readInt();
@@ -156,7 +148,11 @@ public class ModPayloads {
             }
             client.execute(() -> (new DimensionGrabber(client.getNetworkHandler().getRegistryManager())).grab_for_client(id, optiondata, biomeids, biomes));
         });
-        ClientPlayNetworking.registerGlobalReceiver(ModPayloads.SHADER_RELOAD, ModPayloads::receiveShader);
-        ClientPlayNetworking.registerGlobalReceiver(ModPayloads.STARS_RELOAD, ModPayloads::receiveStars);
+        PlatformMethods.registerClientPacketReceiver(ModPayloads.SHADER_RELOAD, (buf) -> {
+            receiveShader(MinecraftClient.getInstance(), MinecraftClient.getInstance().getNetworkHandler(), buf);
+        });
+        PlatformMethods.registerClientPacketReceiver(ModPayloads.STARS_RELOAD, (buf) -> {
+            receiveStars(MinecraftClient.getInstance(), MinecraftClient.getInstance().getNetworkHandler(), buf);
+        });
     }
 }

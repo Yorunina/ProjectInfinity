@@ -5,6 +5,8 @@ import me.basiqueevangelist.dynreg.util.RegistryUtils;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+// import net.fabricmc.fabric.api.networking.v1.ClientPlayNetworking; // 只在客户端可用
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -26,7 +28,9 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 
 import java.nio.file.Path;
 import java.util.function.Function;
@@ -99,5 +103,58 @@ public class PlatformMethodsImpl {
 
     public static Function<Item.Settings, ? extends StarOfLangItem> getStarOfLangConstructor() {
         return StarOfLangItem::new;
+    }
+
+    // 网络相关方法实现
+    public static void sendToPlayer(ServerPlayerEntity player, Identifier channel, PacketByteBuf buf) {
+        ServerPlayNetworking.send(player, channel, buf);
+    }
+
+    public static void sendToClient(Identifier channel, PacketByteBuf buf) {
+        // 这个方法只在客户端调用，但在服务器端编译时不能使用ClientPlayNetworking
+        // 实际实现应该在客户端特定的类中
+        if (FabricLoader.getInstance().getEnvironmentType() == net.fabricmc.api.EnvType.CLIENT) {
+            // 在运行时通过反射调用ClientPlayNetworking
+            try {
+                Class<?> clientNetworkingClass = Class.forName("net.fabricmc.fabric.api.networking.v1.ClientPlayNetworking");
+                java.lang.reflect.Method sendMethod = clientNetworkingClass.getMethod("send", Identifier.class, PacketByteBuf.class);
+                sendMethod.invoke(null, channel, buf);
+            } catch (Exception e) {
+                // 忽略错误，因为这在服务器端不会被执行
+            }
+        }
+    }
+
+    public static void registerServerPacketReceiver(Identifier channel, PlatformMethods.ServerPacketReceiver receiver) {
+        ServerPlayNetworking.registerGlobalReceiver(channel, (server, player, handler, buf, responseSender) -> {
+            receiver.receive(buf, player);
+        });
+    }
+
+    public static void registerClientPacketReceiver(Identifier channel, PlatformMethods.ClientPacketReceiver receiver) {
+        // 这个方法只在客户端调用，但在服务器端编译时不能使用ClientPlayNetworking
+        if (FabricLoader.getInstance().getEnvironmentType() == net.fabricmc.api.EnvType.CLIENT) {
+            try {
+                Class<?> clientNetworkingClass = Class.forName("net.fabricmc.fabric.api.networking.v1.ClientPlayNetworking");
+                Class<?> receiverClass = Class.forName("net.fabricmc.fabric.api.networking.v1.ClientPlayNetworking$PlayChannelHandler");
+                java.lang.reflect.Method registerMethod = clientNetworkingClass.getMethod("registerGlobalReceiver", Identifier.class, receiverClass);
+                
+                // 创建处理器实例
+                Object handler = java.lang.reflect.Proxy.newProxyInstance(
+                    receiverClass.getClassLoader(),
+                    new Class<?>[]{receiverClass},
+                    (proxy, method, args) -> {
+                        if (method.getName().equals("receive")) {
+                            receiver.receive((PacketByteBuf) args[0]);
+                        }
+                        return null;
+                    }
+                );
+                
+                registerMethod.invoke(null, channel, handler);
+            } catch (Exception e) {
+                // 忽略错误，因为这在服务器端不会被执行
+            }
+        }
     }
 }

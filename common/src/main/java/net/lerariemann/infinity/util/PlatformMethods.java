@@ -20,6 +20,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -169,5 +170,33 @@ public class PlatformMethods {
     @ExpectPlatform
     public static Function<Item.Settings, ? extends StarOfLangItem> getStarOfLangConstructor() {
         throw new AssertionError();
+    }
+
+    @ExpectPlatform
+    public static void sendToPlayer(ServerPlayerEntity player, Identifier channel, PacketByteBuf buf) {
+        throw new AssertionError();
+    }
+
+    @ExpectPlatform
+    public static void sendToClient(Identifier channel, PacketByteBuf buf) {
+        throw new AssertionError();
+    }
+
+    @ExpectPlatform
+    public static void registerServerPacketReceiver(Identifier channel, ServerPacketReceiver receiver) {
+        throw new AssertionError();
+    }
+
+    @ExpectPlatform
+    public static void registerClientPacketReceiver(Identifier channel, ClientPacketReceiver receiver) {
+        throw new AssertionError();
+    }
+
+    public interface ServerPacketReceiver {
+        void receive(PacketByteBuf buf, ServerPlayerEntity player);
+    }
+
+    public interface ClientPacketReceiver {
+        void receive(PacketByteBuf buf);
     }
 }

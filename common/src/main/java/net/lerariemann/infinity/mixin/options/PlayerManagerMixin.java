@@ -1,19 +1,19 @@
 package net.lerariemann.infinity.mixin.options;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.lerariemann.infinity.InfinityMod;
 import net.lerariemann.infinity.access.MinecraftServerAccess;
 import net.lerariemann.infinity.registry.core.ModBlocks;
 import net.lerariemann.infinity.registry.core.ModBlockEntities;
 import net.lerariemann.infinity.util.InfinityMethods;
+import net.lerariemann.infinity.util.PlatformMethods;
 import net.lerariemann.infinity.util.core.CommonIO;
 import net.lerariemann.infinity.util.core.RandomProvider;
 import net.lerariemann.infinity.util.teleport.WarpLogic;
 import net.lerariemann.infinity.registry.var.ModPayloads;
 import net.minecraft.block.BlockState;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
@@ -57,7 +57,8 @@ public class PlayerManagerMixin {
     private void injected(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci, @Local(ordinal=0) ServerWorld serverWorld2) {
         if (serverWorld2 == null) return;
         ModPayloads.sendReloadPacket(player, serverWorld2);
-        ServerPlayNetworking.send(player, ModPayloads.STARS_RELOAD, PacketByteBufs.create());
+        PacketByteBuf buf = PlatformMethods.createPacketByteBufs();
+        PlatformMethods.sendToPlayer(player, ModPayloads.STARS_RELOAD, buf);
         MinecraftServerAccess acc = ((MinecraftServerAccess)(serverWorld2.getServer()));
         if (acc.infinity$needsInvocation()) {
             int y = serverWorld2.getTopY() - 10;
@@ -79,6 +80,7 @@ public class PlayerManagerMixin {
     @Inject(method="sendWorldInfo", at = @At("TAIL"))
     private void injected2(ServerPlayerEntity player, ServerWorld world, CallbackInfo ci) {
         ModPayloads.sendReloadPacket(player, world);
-        ServerPlayNetworking.send(player, ModPayloads.STARS_RELOAD, PacketByteBufs.create());
+        PacketByteBuf buf = PlatformMethods.createPacketByteBufs();
+        PlatformMethods.sendToPlayer(player, ModPayloads.STARS_RELOAD, buf);
     }
 }

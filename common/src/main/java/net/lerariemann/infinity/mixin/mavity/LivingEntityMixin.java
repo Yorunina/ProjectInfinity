@@ -1,5 +1,6 @@
 package net.lerariemann.infinity.mixin.mavity;
 
+import dev.architectury.platform.Platform;
 import net.lerariemann.infinity.access.MavityInterface;
 import net.minecraft.entity.Attackable;
 import net.minecraft.entity.Entity;
@@ -20,11 +21,19 @@ public abstract class LivingEntityMixin extends Entity implements Attackable, Ma
 
     @ModifyArg(method = "computeFallDamage", at = @At(value="INVOKE", target="Lnet/minecraft/util/math/MathHelper;ceil(F)I"))
     float injected(float value) {
-        return (float)getMavity() * value;
+        // 只在Fabric平台且gravity_changer_q未加载时应用
+        if (Platform.isFabric() && !Platform.isModLoaded("gravity_changer_q")) {
+            return (float)getMavity() * value;
+        }
+        return value;
     }
 
     @ModifyConstant(method = "travel", constant = @Constant(doubleValue = 0.08))
     double inj2(double value) {
-        return value*getMavity();
+        // 只在Fabric平台且gravity_changer_q未加载时应用
+        if (Platform.isFabric() && !Platform.isModLoaded("gravity_changer_q")) {
+            return value*getMavity();
+        }
+        return value;
     }
 }

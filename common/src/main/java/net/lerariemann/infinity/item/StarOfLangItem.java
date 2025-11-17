@@ -8,10 +8,6 @@ public class StarOfLangItem extends Item {
     public StarOfLangItem(Settings settings) {
         super(settings);
     }
-    @Override
-    public ItemStack getRecipeRemainder(ItemStack stack) {
-        return ModItems.STAR_OF_LANG.get().getDefaultStack();
-    }
 
     @Override
     public boolean hasGlint(ItemStack stack) { 

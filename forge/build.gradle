@@ -38,7 +38,6 @@ dependencies {
     shadowBundle project(path: ':common', configuration: 'transformProductionForge')
 
     modApi "me.shedaniel.cloth:cloth-config-forge:${project.cloth_version}"
-    modImplementation "dev.su5ed.sinytra.fabric-api:fabric-api:${forgified_fabric_api_version}"
     modImplementation "dev.architectury:architectury-forge:$rootProject.architectury_api_version"
     modImplementation "curse.maven:rhino-416294:6186971"
     modImplementation "curse.maven:kubejs-forge-238086:5853326"

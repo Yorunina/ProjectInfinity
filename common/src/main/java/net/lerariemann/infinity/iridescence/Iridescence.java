@@ -1,7 +1,6 @@
 package net.lerariemann.infinity.iridescence;
 
 import dev.architectury.registry.registries.RegistrySupplier;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.lerariemann.infinity.InfinityMod;
 import net.lerariemann.infinity.registry.core.ModEntities;
 import net.lerariemann.infinity.registry.var.ModPayloads;
@@ -172,10 +171,10 @@ public interface Iridescence {
     }
 
     public static void loadShader(ServerPlayerEntity player) {
-        ServerPlayNetworking.send(player, ModPayloads.SHADER_RELOAD, ModPayloads.buildPacket(player.getServerWorld(), true));
+        PlatformMethods.sendToPlayer(player, ModPayloads.SHADER_RELOAD, ModPayloads.buildPacket(player.getServerWorld(), true));
     }
     public static void unloadShader(ServerPlayerEntity player) {
-        ServerPlayNetworking.send(player, ModPayloads.SHADER_RELOAD, ModPayloads.buildPacket(player.getServerWorld(), false));
+        PlatformMethods.sendToPlayer(player, ModPayloads.SHADER_RELOAD, ModPayloads.buildPacket(player.getServerWorld(), false));
     }
 
     static boolean shouldApplyShader(@Nullable PlayerEntity player) {

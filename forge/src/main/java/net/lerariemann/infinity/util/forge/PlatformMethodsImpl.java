@@ -2,12 +2,11 @@ package net.lerariemann.infinity.util.forge;
 
 import dev.architectury.registry.registries.RegistrySupplier;
 import io.netty.buffer.Unpooled;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.lerariemann.infinity.item.forge.StarOfLangItemForge;
 import net.lerariemann.infinity.fluids.forge.FluidTypes;
 import net.lerariemann.infinity.item.StarOfLangItem;
 import net.lerariemann.infinity.util.PlatformMethods;
+import net.lerariemann.infinity.platform.forge.ForgePlatformImpl;
 import net.lerariemann.infinity.registry.core.ModBlocks;
 import net.lerariemann.infinity.fluids.forge.IridescenceLiquidBlockForge;
 import net.lerariemann.infinity.fluids.forge.ModFluidsForge;
@@ -25,7 +24,9 @@ import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
@@ -63,9 +64,7 @@ public class PlatformMethodsImpl {
 
     //Optional, requires Item Group API.
     public static <T extends Item> void addAfter(RegistrySupplier<T> supplier, RegistryKey<ItemGroup> group, Item item) {
-        if (InfinityMethods.isFabricApiLoaded("fabric-item-group-api-v1")) {
-            ItemGroupEvents.modifyEntriesEvent(group).register(content -> content.addAfter(item, supplier.get()));
-        }
+        // Forge implementation would use different approach
     }
 
     public static RegistrySupplier<ForgeFlowingFluid.Source> getIridescenceStill() {
@@ -98,9 +97,7 @@ public class PlatformMethodsImpl {
     }
 
     public static void registerFlammableBlock(RegistrySupplier<Block> block, int burn, int spread) {
-        if (InfinityMethods.isFabricApiLoaded("fabric-content-registries-v0")) {
-            FlammableBlockRegistry.getDefaultInstance().add(block.get(), burn, spread);
-        }
+        // Forge implementation would use different approach
     }
 
     public static boolean acidTest(Entity entity, boolean eyes) {
@@ -116,5 +113,22 @@ public class PlatformMethodsImpl {
 
     public static Function<Item.Settings, ? extends StarOfLangItem> getStarOfLangConstructor() {
         return StarOfLangItemForge::new;
+    }
+
+    // 网络相关方法实现
+    public static void sendToPlayer(ServerPlayerEntity player, Identifier channel, PacketByteBuf buf) {
+        ForgePlatformImpl.sendToPlayer(player, channel, buf);
+    }
+
+    public static void sendToClient(Identifier channel, PacketByteBuf buf) {
+        ForgePlatformImpl.sendToClient(channel, buf);
+    }
+
+    public static void registerServerPacketReceiver(Identifier channel, PlatformMethods.ServerPacketReceiver receiver) {
+        ForgePlatformImpl.registerServerPacketReceiver(channel, receiver);
+    }
+
+    public static void registerClientPacketReceiver(Identifier channel, PlatformMethods.ClientPacketReceiver receiver) {
+        ForgePlatformImpl.registerClientPacketReceiver(channel, receiver);
     }
 }

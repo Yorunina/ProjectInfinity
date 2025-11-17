@@ -19,6 +19,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SingleStackInventory;
 import net.minecraft.item.FluidModificationItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.nbt.NbtCompound;
@@ -85,7 +86,8 @@ public class ModItemFunctions {
                 World world = pointer.getWorld();
                 if (fluidModificationItem.placeFluid(null, world, blockPos, null)) {
                     fluidModificationItem.onEmptied(null, world, stack, blockPos);
-                    return stack.getRecipeRemainder();
+                    Item remainder = stack.getItem().getRecipeRemainder();
+                    return remainder != null ? new ItemStack(remainder) : ItemStack.EMPTY;
                 } else {
                     return new ItemDispenserBehavior().dispense(pointer, stack);
                 }

@@ -6,8 +6,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.architectury.registry.registries.DeferredRegister;
 import net.lerariemann.infinity.iridescence.Iridescence;
 import net.lerariemann.infinity.registry.core.ModBlocks;
+import net.lerariemann.infinity.registry.var.rules.CubeMaterial;
+import net.lerariemann.infinity.registry.var.rules.PerfectionMaterial;
 import net.lerariemann.infinity.util.InfinityMethods;
 import net.lerariemann.infinity.util.core.RandomProvider;
+import net.lerariemann.infinity.util.registry.RuleUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LadderBlock;
@@ -24,10 +27,6 @@ import net.minecraft.world.gen.surfacebuilder.MaterialRules;
 import static net.lerariemann.infinity.InfinityMod.MOD_ID;
 
 public class ModMaterialRules {
-    static int normalize(int x, int size) {
-        int a = Math.abs(x < 0 ? x+1 : x) % size;
-        return (x < 0) ? size - 1 - a : a;
-    }
 
     public record RandomBlockStateRule(RandomProvider prov) implements MaterialRules.BlockStateRule
     {
@@ -231,9 +230,9 @@ public class ModMaterialRules {
         static final BlockState air = Blocks.AIR.getDefaultState();
         @Override
         public BlockState tryApply(int i, int j, int k) {
-            int x = normalize(i, 8);
+            int x = RuleUtils.normalize(i, 8);
             int y = j - 50;
-            int z = normalize(k, 16);
+            int z = RuleUtils.normalize(k, 16);
             if (y==-2) return Blocks.BEDROCK.getDefaultState();
             switch (y) {
                 case -1, 9 -> {
@@ -299,102 +298,6 @@ public class ModMaterialRules {
         }
     }
 
-    public static class Perfection implements MaterialRules.BlockStateRule
-    {
-        static final BlockState cobblestone = Blocks.COBBLESTONE.getDefaultState();
-        static final BlockState lightNorth = Blocks.WALL_TORCH.getDefaultState().with(Properties.HORIZONTAL_FACING, Direction.NORTH);
-        static final BlockState lightSouth = Blocks.WALL_TORCH.getDefaultState().with(Properties.HORIZONTAL_FACING, Direction.SOUTH);
-        static final BlockState lightEast = Blocks.WALL_TORCH.getDefaultState().with(Properties.HORIZONTAL_FACING, Direction.EAST);
-        static final BlockState lightWest = Blocks.WALL_TORCH.getDefaultState().with(Properties.HORIZONTAL_FACING, Direction.WEST);
-        static final BlockState glass = Blocks.GLASS.getDefaultState();
-        static final BlockState air = Blocks.AIR.getDefaultState();
-        @Override
-        public BlockState tryApply(int i, int j, int k) {
-            int x = normalize(i, 10);
-            int y = j - 50;
-            int z = normalize(k, 10);
-            if (y==-2) return Blocks.BEDROCK.getDefaultState();
-            switch (y) {
-                case -1 -> {
-                    return cobblestone;
-                }
-                case 4 -> {
-                    //Skylights
-                    if ((z == 7 || z == 6 || z == 0 || z == 9) && (x == 0 || x == 9 || x == 2 || x == 3)) return glass;
-                    return cobblestone;
-                }
-                case 3 -> {
-                    // Crossroad overhang, North/South
-                    if (z == 2 || z == 3 || z == 4) {
-                        return cobblestone;
-                    }
-                    //Crossroad torch - South (North facing)
-                    else if (z == 1) {
-                        if (x == 1) {
-                            return lightNorth;
-                        }
-                    }
-                    //Crossroad torch - North (South facing)
-                    else if (z == 5) {
-                        if (x == 1) {
-                            return lightSouth;
-                        }
-                    }
-                    // Crossroad overhang, East/West
-                    if (x == 7 || x == 6 || x == 5) {
-                        return cobblestone;
-                    }
-                    //Crossroad torch - West (East facing)
-                    else if (x == 8) {
-                        if (z == 8) {
-                            return lightEast;
-                        }
-                    }
-                    //Crossroad torch - East (West facing)
-                    else if (x == 4) {
-                        if (z == 8) {
-                            return lightWest;
-                        }
-                    }
-                     return air;
-                }
-                case 0, 1, 2 -> {
-                    //Crossroad walls, East/West
-                    if (x == 7 || x == 6 || x == 5) {
-                        if (z == 7 || z == 8 || z == 9) {
-                            return air;
-                        }
-                        return cobblestone;
-                    }
-                    //Crossroad walls, North/South
-                    if (z == 2 || z == 3 || z == 4 || z == 12 || z == 13 || z == 14) {
-                        if (x == 0 || x == 2 || x == 1) {
-                            return air;
-                        }
-                        return cobblestone;
-                    }
-
-                    return air;
-                }
-                default -> {
-                    return air;
-                }
-            }
-        }
-
-        enum Rule implements MaterialRules.MaterialRule {
-            INSTANCE;
-            static final CodecHolder<Perfection.Rule> CODEC = CodecHolder.of(MapCodec.unit(INSTANCE));
-            @Override
-            public CodecHolder<? extends MaterialRules.MaterialRule> codec() {
-                return CODEC;
-            }
-            @Override
-            public MaterialRules.BlockStateRule apply(MaterialRules.MaterialRuleContext materialRuleContext) {
-                return new Perfection();
-            }
-        }
-    }
 
     public static final DeferredRegister<Codec<? extends MaterialRules.MaterialRule>> MATERIAL_RULES =
             DeferredRegister.create(MOD_ID, RegistryKeys.MATERIAL_RULE);
@@ -403,13 +306,16 @@ public class ModMaterialRules {
         MATERIAL_RULES.register(name, holder::codec);
     }
 
+
+
     public static void registerRules() {
         register("chaos", RandomBlockMaterialRule.CODEC);
         register("colored_chaos", RandomColoredBlock.Rule.CODEC);
         register("library", Library.Rule.CODEC);
         register("backrooms", Backrooms.Rule.CODEC);
         register("nexus", Nexus.Rule.CODEC);
-        register("perfection", Perfection.Rule.CODEC);
+        register("perfection", PerfectionMaterial.Rule.CODEC);
+        register("cube", CubeMaterial.Rule.CODEC);
         MATERIAL_RULES.register();
     }
 }

@@ -13,9 +13,11 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 public interface Timebombable {
     void infinity$timebomb();
+
     boolean infinity$tryRestore();
 
     boolean infinity$isTimebombed();
+
     int infinity$getTimebombProgress();
 
     static int getCooldownTicks() {
@@ -28,12 +30,10 @@ public interface Timebombable {
         int i = infinity$getTimebombProgress();
         if (i > 3540) {
             WarpLogic.respawnAlive(player);
-        }
-        else if (i > 3500) {
+        } else if (i > 3500) {
             ModCriteria.WHO_REMAINS.trigger(player);
-        }
-        else if (i > 200) {
-            if (i%4 == 0) {
+        } else if (i > 200) {
+            if (i % 4 == 0) {
                 Registry<DamageType> r = player.getServerWorld().getServer().getRegistryManager().get(RegistryKeys.DAMAGE_TYPE);
                 RegistryEntry<DamageType> entry = r.getEntry(r.get(InfinityMethods.getId("world_ceased")));
                 player.damage(new DamageSource(entry), i > 400 ? 2.0f : 1.0f);

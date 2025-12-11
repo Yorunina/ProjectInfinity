@@ -67,13 +67,11 @@ public class InfinityPortal {
     }
 
     /** A portal should be marked as "open" if and only if it has a non-null destination dimension. These functions are here to ensure it */
-    public static void tryUpdateOpenStatus(InfinityPortalBlockEntity ipbe, ServerWorld worldFrom, BlockPos posFrom,
-                                           MinecraftServer server) {
+    public static void tryUpdateOpenStatus(InfinityPortalBlockEntity ipbe, ServerWorld worldFrom, BlockPos posFrom, MinecraftServer server) {
         ServerWorld worldTo = server.getWorld(RegistryKey.of(RegistryKeys.WORLD, ipbe.getDimension()));
         tryUpdateOpenStatus(ipbe, worldFrom, posFrom, worldTo);
     }
-    public static void tryUpdateOpenStatus(InfinityPortalBlockEntity ipbe, ServerWorld worldFrom, BlockPos posFrom,
-                                           ServerWorld worldTo) {
+    public static void tryUpdateOpenStatus(InfinityPortalBlockEntity ipbe, ServerWorld worldFrom, BlockPos posFrom, ServerWorld worldTo) {
         if (!ipbe.isOpen() ^ worldTo == null) {
             PortalCreator.modifyPortalRecursive(worldFrom, posFrom, e -> e.setOpen(!ipbe.isOpen()));
         }
@@ -130,10 +128,6 @@ public class InfinityPortal {
                 player.sendMessage(Text.translatable("error.infinity.portal.cannot_create"));
             else InfinityMethods.sendUnexpectedError(player, "portal");
         }
-        else if (!ipbe.isOpen())
-            InfinityMod.provider.getPortalKeyAsItem().ifPresent(item -> player.sendMessage(
-                    Text.translatable("error.infinity.portal.closed",
-                            ((MutableText)item.getName()).formatted(Formatting.AQUA))));
         else player.sendMessage(Text.translatable("error.infinity.portal.null"));
     }
 

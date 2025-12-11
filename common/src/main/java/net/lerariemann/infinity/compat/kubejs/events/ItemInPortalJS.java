@@ -5,13 +5,13 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class ItemInNetherPortalJS extends LevelEventJS {
+public class ItemInPortalJS extends LevelEventJS {
 
     private final World level;
     private final BlockPos pos;
     private final ItemEntity entity;
 
-    public ItemInNetherPortalJS(World world, BlockPos pos, ItemEntity entity) {
+    public ItemInPortalJS(World world, BlockPos pos, ItemEntity entity) {
         super();
         this.level = world;
         this.pos = pos;

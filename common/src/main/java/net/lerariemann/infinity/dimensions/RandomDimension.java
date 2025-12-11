@@ -46,6 +46,7 @@ public class RandomDimension {
     public MinecraftServer server;
     public NbtCompound data;
     public RandomDimensionType type;
+    public boolean isEasterDim = false;
 
     public RandomDimension(Identifier id, MinecraftServer server) {
         this.server = server;
@@ -56,7 +57,7 @@ public class RandomDimension {
         initializeStorage();
         /* Code for easter dimensions */
         if (PROVIDER.easterizer.easterize(this)) {
-            wrap_up(true);
+            isEasterDim = true;
             return;
         }
         /* Code for procedurally generated dimensions */
@@ -70,7 +71,6 @@ public class RandomDimension {
             addStructures(b);
         }
         writeTags(getRootPath());
-        wrap_up(false);
     }
 
     public String getName() {
@@ -122,14 +122,15 @@ public class RandomDimension {
                 NbtUtils.nameToElement("minecraft:deepslate") : default_block;
     }
 
-    void wrap_up(boolean isEasterDim) {
-        if (!isEasterDim) (new DimensionData(this)).save();
-        (new RandomInfinityOptions(this, isEasterDim)).save();
+    public RandomDimension wrapUp() {
+        if (!this.isEasterDim) (new DimensionData(this)).save();
+        (new RandomInfinityOptions(this, this.isEasterDim)).save();
         CommonIO.write(data, getStoragePath() + "/dimension", getName() + ".json");
         if (!(Paths.get(getRootPath() + "/pack.mcmeta")).toFile().exists()) CommonIO.write(packMcmeta(), getRootPath(), "pack.mcmeta");
+        return this;
     }
 
-    String getDefaultBlock(String fallback) {
+    public String getDefaultBlock(String fallback) {
         switch(type_alike) {
             case "minecraft:end" -> {
                 return "minecraft:end_stone";
@@ -142,7 +143,7 @@ public class RandomDimension {
             }
         }
     }
-    String getDefaultFluid() {
+    public String getDefaultFluid() {
         switch(type_alike) {
             case "minecraft:end" -> {
                 return "minecraft:air";
@@ -345,7 +346,7 @@ public class RandomDimension {
         for (int i = 0; i < numstructures; i++) {
             addStructure(new RandomStructure(random.nextInt(), b), temp);
         }
-        if (PROVIDER.roll( random, "text")) {
+        if (PROVIDER.roll(random, "text")) {
             addStructure(new RandomText(random.nextInt(), b), temp);
         }
     }

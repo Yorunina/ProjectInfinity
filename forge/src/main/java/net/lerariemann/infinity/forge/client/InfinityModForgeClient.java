@@ -48,7 +48,6 @@ public class InfinityModForgeClient {
     @SubscribeEvent
     public static void registerItemColorHandlers(RegisterColorHandlersEvent.Item event) {
         event.register(InfinityMethods::getOverlayColorFromComponents,
-                ModItems.TRANSFINITE_KEY.get(),
                 ModItems.BIOME_BOTTLE_ITEM.get(),
                 ModItems.F4.get(),
                 ModItems.CHROMATIC_WOOL.get(),

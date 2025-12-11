@@ -39,7 +39,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 import static net.lerariemann.infinity.InfinityMod.MOD_ID;
-import static net.lerariemann.infinity.registry.core.ModItems.TRANSFINITE_KEY;
 
 public class ModItemFunctions {
 
@@ -95,9 +94,7 @@ public class ModItemFunctions {
         });
     }
 
-    public static void checkCollisionRecipes(ServerWorld w, ItemEntity itemEntity,
-                                             RecipeType<CollisionCraftingRecipe> recipeType,
-                                             NbtCompound compound) {
+    public static void checkCollisionRecipes(ServerWorld w, ItemEntity itemEntity, RecipeType<CollisionCraftingRecipe> recipeType, NbtCompound compound) {
         if (itemEntity.isRemoved()) return;
         ItemStack itemStack = itemEntity.getStack();
         Optional<CollisionCraftingRecipe> match = w.getRecipeManager()
@@ -145,30 +142,11 @@ public class ModItemFunctions {
 
     @Environment(EnvType.CLIENT)
     public static void registerModelPredicates() {
-        ItemPropertiesRegistry.register(TRANSFINITE_KEY.get(), InfinityMethods.getId("key"), (stack, world, entity, seed) -> {
-            String id;
-            if (stack.getNbt() != null) {
-                id = stack.getNbt().getString("key_destination");
-            }
-            else id = "minecraft:random";
-            if (id == null) return 0;
-            if (id.contains("infinity:generated_")) return 0.01f;
-            return switch(id) {
-                case "minecraft:random" -> 0.02f;
-                case "minecraft:the_end" -> 0.03f;
-                case "infinity:pride" -> 0.04f;
-                default -> 0;
-            };
-        });
         ItemPropertiesRegistry.register(ModItems.BIOME_BOTTLE_ITEM.get(), InfinityMethods.getId("bottle"),
                 (stack, world, entity, seed) -> {
                     int charge = BiomeBottleBlock.getCharge(stack);
                     return MathHelper.clamp(charge / 1000.0f, 0f, 1f);
                 });
-        ItemPropertiesRegistry.register(ModItems.IRIDESCENT_CARPET.get(), InfinityMethods.getId("iridescent"),
-                ModItemFunctions::iridPredicate);
-        ItemPropertiesRegistry.register(ModItems.IRIDESCENT_WOOL.get(), InfinityMethods.getId("iridescent"),
-                ModItemFunctions::iridPredicate);
         ItemPropertiesRegistry.register(ModItems.F4.get(), InfinityMethods.getId("f4"),
                 (stack, world, entity, seed) -> {
                     Identifier id = BackportMethods.getDimensionIdentifier(stack);

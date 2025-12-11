@@ -166,9 +166,7 @@ public interface InfinityMethods {
     static int getOverlayColorFromComponents(ItemStack stack, int layer) {
         if (stack.getNbt() != null) {
             if (layer == 1) {
-                if (stack.isOf(ModItems.TRANSFINITE_KEY.get()))
-                    return stack.getNbt().getInt(ModComponentTypes.COLOR);
-                else if (stack.isOf(ModItems.BIOME_BOTTLE_ITEM.get())) {
+                if (stack.isOf(ModItems.BIOME_BOTTLE_ITEM.get())) {
                     return stack.getNbt().getCompound("BlockEntityTag").getInt("Color");
                 }
                 else if (stack.isOf(ModItems.F4.get())) {

@@ -1,5 +1,6 @@
 package net.lerariemann.infinity.mixin.core;
 
+import net.lerariemann.infinity.compat.kubejs.Events;
 import net.lerariemann.infinity.registry.core.ModBlocks;
 import net.lerariemann.infinity.block.entity.InfinityPortalBlockEntity;
 import net.lerariemann.infinity.util.InfinityMethods;
@@ -33,7 +34,7 @@ public class NetherPortalBlockMixin extends AbstractBlockMixin {
 	@Inject(at = @At("HEAD"), method = "onEntityCollision(Lnet/minecraft/block/BlockState;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/entity/Entity;)V")
 	private void injected(BlockState state, World world, BlockPos pos, Entity entity, CallbackInfo info) {
 		if (world instanceof ServerWorld w && entity instanceof ItemEntity e) {
-			PortalCreator.tryCreatePortalFromItem(w, pos, e);
+            Events.postItemInPortal(w, pos, e);
 		}
 	}
 

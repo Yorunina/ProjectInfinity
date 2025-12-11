@@ -95,6 +95,7 @@ public class InfinityPortalBlockEntity extends TintableBlockEntity {
             world.updateListeners(pos, bs, bs, 0);
         }
     }
+
     public void setOpen(boolean i) {
         this.isOpen = i;
     }

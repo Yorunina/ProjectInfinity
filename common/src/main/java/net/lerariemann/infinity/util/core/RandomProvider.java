@@ -30,7 +30,6 @@ public class RandomProvider {
     private final Map<String, Double> gameRulesDouble = new HashMap<>();
     public ArrayList<String> disabledDimensions = new ArrayList<>();
     public Path savingPath;
-    private String portalKey;
     public String salt;
     public Easterizer easterizer;
 
@@ -45,13 +44,6 @@ public class RandomProvider {
         (new CorePack(this, savingPath)).generate();
     }
 
-    public Optional<Item> getPortalKeyAsItem() {
-        if (portalKey.isBlank()) return Optional.empty();
-        return Registries.ITEM.getOrEmpty(new Identifier(portalKey));
-    }
-    public boolean isPortalKeyBlank() {
-        return getPortalKeyAsItem().isEmpty();
-    }
     public boolean roll(Random random, String key) {
         return (random.nextDouble() < rootChances.getOrDefault(key, 0.0));
     }
@@ -146,7 +138,6 @@ public class RandomProvider {
 
     void readRootConfig() {
         NbtCompound rootConfig = CommonIO.read(configPath.resolve("infinity.json"));
-        portalKey = rootConfig.getString("portalKey");
         salt = rootConfig.getString("salt");
         NbtCompound gamerules = rootConfig.getCompound("gameRules");
         for (String s: gamerules.getKeys()) {

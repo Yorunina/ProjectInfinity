@@ -32,10 +32,8 @@ public class IridescenceLiquidBlock extends ArchitecturyLiquidBlock {
             } else if (entity instanceof MobEntity ent) {
                 Iridescence.tryApplyEffect(ent);
             } else if (entity instanceof ItemEntity item) {
-                if (!Iridescence.isIridescentItem(item.getStack()) && item.getOwner() instanceof LivingEntity le &&
-                        !Iridescence.getPhase(le).equals(Iridescence.Phase.INITIAL))
-                    ModItemFunctions.checkCollisionRecipes(w, item, ModItemFunctions.IRIDESCENCE_CRAFTING_TYPE.get(),
-                            new NbtCompound());
+                if (!Iridescence.isIridescentItem(item.getStack()) && item.getOwner() instanceof LivingEntity le && !Iridescence.getPhase(le).equals(Iridescence.Phase.INITIAL))
+                    ModItemFunctions.checkCollisionRecipes(w, item, ModItemFunctions.IRIDESCENCE_CRAFTING_TYPE.get(), new NbtCompound());
             }
         }
     }

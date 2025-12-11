@@ -83,8 +83,6 @@ public class ModItems {
     //misc
     public static final RegistrySupplier<Item> FOOTPRINT =
             registerItemAfter("footprint", ItemGroups.INGREDIENTS, Items.DISC_FRAGMENT_5, Item::new);
-    public static final RegistrySupplier<TransfiniteKeyItem> TRANSFINITE_KEY =
-            registerItemAfter("key", ItemGroups.INGREDIENTS, Items.AMETHYST_SHARD, TransfiniteKeyItem::new);
     public static final RegistrySupplier<HomeItem> HOME_ITEM =
             registerItemAfter("fine_item", ItemGroups.INGREDIENTS, Items.MILK_BUCKET, HomeItem::new,
                     new Item.Settings().food(

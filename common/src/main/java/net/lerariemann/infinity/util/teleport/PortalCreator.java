@@ -10,7 +10,6 @@ import net.lerariemann.infinity.compat.kubejs.Events;
 import net.lerariemann.infinity.dimensions.RandomDimension;
 import net.lerariemann.infinity.options.PortalColorApplier;
 import net.lerariemann.infinity.registry.core.ModBlocks;
-import net.lerariemann.infinity.registry.core.ModItems;
 import net.lerariemann.infinity.registry.var.ModCriteria;
 import net.lerariemann.infinity.registry.var.ModPayloads;
 import net.lerariemann.infinity.registry.var.ModSounds;
@@ -25,12 +24,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -56,99 +51,78 @@ import net.minecraft.world.World;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static net.lerariemann.infinity.util.InfinityMethods.isCreateLoaded;
 
 public interface PortalCreator {
-    /**
-     * Check if the item that is colliding with the Portal can be used to
-     * transform it into an Infinity Portal.
-     */
-    static void tryCreatePortalFromItem(World world, BlockPos pos, ItemEntity entity) {
-        if (entity.isRemoved()) return;
-        ItemStack itemStack = entity.getStack();
-        if (itemStack.getItem() == ModItems.TRANSFINITE_KEY.get()) {
-            Identifier key_dest = BackportMethods.getDimensionIdentifier(itemStack);
-            MinecraftServer server = world.getServer();
-            if (server != null) {
-                if (world instanceof ServerWorld serverWorld) {
-                    boolean bl = modifyOnInitialCollision(Objects.requireNonNullElse(key_dest, Identifier.of("minecraft", "random")),
-                            serverWorld, pos);
-                    if (bl) entity.remove(Entity.RemovalReason.CHANGED_DIMENSION);
-                }
-            }
-        }
-        Events.postItemInNetherPortal(world, pos, entity);
-    }
 
-    /**
-     * Extracts the string used to generate the dimension ID from component content.
-     */
-    static String parseComponents(NbtCompound compound, Item item) {
-        NbtList pages = compound.getList("pages", NbtElement.STRING_TYPE);
-        if (pages.isEmpty()) {
-            return "";
-        }
-        else if (item == Items.WRITTEN_BOOK) {
-            String pagesString = pages.get(0).asString();
-            return pagesString.substring(pagesString.indexOf(':')+2, pagesString.length()-2);
-        }
-        else if (item == Items.WRITABLE_BOOK) {
-            return pages.get(0).asString();
-        }
-        else return "";
-    }
-
-    /**
-     * Sets the portal color and destination and calls to open the portal immediately if the portal key is blank.
-     * Statistics for opening the portal are attributed to the nearest player.
-     */
-    static boolean modifyOnInitialCollision(Identifier dimName, ServerWorld world, BlockPos pos) {
+    static boolean tryCreatePortalById(String dimString, ServerWorld world, BlockPos pos) {
         MinecraftServer server = world.getServer();
+        Identifier dimName = new Identifier(dimString);
         PlayerEntity nearestPlayer = world.getClosestPlayer(pos.getX(), pos.getY(), pos.getZ(), 5, false);
-
-        if (((MinecraftServerAccess)server).infinity$needsInvocation()) {
-            onInvocationNeedDetected(nearestPlayer);
-            return false;
-        }
 
         if (dimName.getPath().equals("random")) {
             dimName = InfinityMethods.getRandomId(world.random);
         }
+        if (((MinecraftServerAccess) server).infinity$needsInvocation()) {
+            onInvocationNeedDetected(nearestPlayer);
+            return false;
+        }
 
-        /* Set color and destination. Open status = the world that is being accessed exists already. */
         boolean dimensionExistsAlready = server.getWorldRegistryKeys().contains(RegistryKey.of(RegistryKeys.WORLD, dimName));
-        modifyPortalRecursive(world, pos, dimName, dimensionExistsAlready);
+        // 为了保证下界传送门方块一定变成 InfinityPortalBlock
+        BlockState blockState = world.getBlockState(pos);
+        if (blockState.getBlock() instanceof NetherPortalBlock) {
+            modifyPortalRecursive(world, pos, forInitialSetupping(world, pos, dimName, dimensionExistsAlready));
+        }
 
         if (dimensionExistsAlready) {
-            if (nearestPlayer != null) nearestPlayer.increaseStat(ModStats.PORTALS_OPENED_STAT, 1);
+            if (nearestPlayer != null) {
+                nearestPlayer.increaseStat(ModStats.PORTALS_OPENED_STAT, 1);
+            }
             runAfterEffects(world, pos, false, true);
-        }
+        } else {
+            boolean isDimensionNew = tryAddInfinityDimension(server, dimName);
+            runAfterEffects(world, pos, isDimensionNew, true);
 
-        /* If the portal key is blank, open the portal immediately. */
-        else if (InfinityMod.provider.isPortalKeyBlank()) {
-            openWithStatIncrease(nearestPlayer, server, world, pos);
-        }
-        else {
-            runAfterEffects(world, pos, false, false);
+            if (nearestPlayer != null) {
+                if (isDimensionNew) {
+                    nearestPlayer.increaseStat(ModStats.DIMS_OPENED_STAT, 1);
+                    ModCriteria.DIMS_OPENED.trigger((ServerPlayerEntity) nearestPlayer);
+                }
+                nearestPlayer.increaseStat(ModStats.PORTALS_OPENED_STAT, 1);
+            }
         }
         return true;
     }
 
     /* Calls to open the portal and attributes the relevant statistics to a player provided. */
     static void openWithStatIncrease(PlayerEntity player, MinecraftServer s, ServerWorld world, BlockPos pos) {
-        if (((MinecraftServerAccess)s).infinity$needsInvocation()) {
+        if (((MinecraftServerAccess) s).infinity$needsInvocation()) {
             onInvocationNeedDetected(player);
             return;
         }
-        boolean isDimensionNew = open(s, world, pos);
+        boolean isDimensionNew = false;
+
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof InfinityPortalBlockEntity infinityPortalBlockEntity) {
+            Identifier i = infinityPortalBlockEntity.getDimension();
+            if (i.getNamespace().equals(InfinityMod.MOD_ID)) {
+                isDimensionNew = tryAddInfinityDimension(s, i);
+            }
+            modifyPortalRecursive(world, pos, be -> {
+                be.setOpen(true);
+                be.markDirty();
+            });
+            runAfterEffects(world, pos, isDimensionNew, true);
+        }
+
         if (player != null) {
             if (isDimensionNew) {
                 player.increaseStat(ModStats.DIMS_OPENED_STAT, 1);
-                ModCriteria.DIMS_OPENED.trigger((ServerPlayerEntity)player);
+                ModCriteria.DIMS_OPENED.trigger((ServerPlayerEntity) player);
             }
             player.increaseStat(ModStats.PORTALS_OPENED_STAT, 1);
         }
@@ -156,29 +130,6 @@ public interface PortalCreator {
 
     static void onInvocationNeedDetected(PlayerEntity player) {
         if (player != null) player.sendMessage(Text.translatable("error.infinity.invocation_needed"));
-    }
-
-    /**
-     * Opens the portal by trying to make it usable, including a call to generate a dimension if needed.
-     */
-    static boolean open(MinecraftServer s, ServerWorld world, BlockPos pos) {
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-        boolean bl = false;
-        if (blockEntity instanceof InfinityPortalBlockEntity npbe) {
-            /* Call dimension creation. */
-            Identifier i = npbe.getDimension();
-            if (i.getNamespace().equals(InfinityMod.MOD_ID)) {
-                bl = tryAddInfinityDimension(s, i);
-            }
-
-            /* Set the portal's open status making it usable. */
-            modifyPortalRecursive(world, pos, be -> {
-                be.setOpen(true);
-                be.markDirty();
-            });
-            runAfterEffects(world, pos, bl, true);
-        }
-        return bl;
     }
 
     /**
@@ -194,13 +145,15 @@ public interface PortalCreator {
     static void modifyPortalRecursive(ServerWorld world, BlockPos pos, Consumer<InfinityPortalBlockEntity> consumer) {
         modifyPortalRecursive(world, pos, new PortalModifier(consumer));
     }
+
     static void modifyPortalRecursive(ServerWorld world, BlockPos pos, BiConsumer<World, BlockPos> modifier) {
         Direction.Axis axis = world.getBlockState(pos).get(NetherPortalBlock.AXIS);
-        BlockLocating.Rectangle rect = BlockLocating.getLargestRectangle(pos, axis, 21,
-                Direction.Axis.Y, 21, posx -> world.getBlockState(posx).getBlock() instanceof NetherPortalBlock);
-        for (int i = 0; i < rect.width; i++) for (int j = 0; j < rect.height; j++) {
-            BlockPos blockPos = rect.lowerLeft.up(j).offset(axis, i);
-            modifier.accept(world, blockPos);
+        BlockLocating.Rectangle rect = BlockLocating.getLargestRectangle(pos, axis, 21, Direction.Axis.Y, 21, posx -> world.getBlockState(posx).getBlock() instanceof NetherPortalBlock);
+        for (int i = 0; i < rect.width; i++) {
+            for (int j = 0; j < rect.height; j++) {
+                BlockPos blockPos = rect.lowerLeft.up(j).offset(axis, i);
+                modifier.accept(world, blockPos);
+            }
         }
     }
 
@@ -226,6 +179,7 @@ public interface PortalCreator {
         return union;
     }
 
+
     /**
      * Calls to create the dimension based on its ID. Returns true if the dimension being opened is indeed brand new.
      */
@@ -233,18 +187,16 @@ public interface PortalCreator {
         /* checks if the dimension requested is valid and does not already exist */
         if (!id.getNamespace().equals(InfinityMod.MOD_ID)) return false;
         RegistryKey<World> key = RegistryKey.of(RegistryKeys.WORLD, id);
-        if (((MinecraftServerAccess)(server)).infinity$hasToAdd(key)) return false;
+        if (((MinecraftServerAccess) (server)).infinity$hasToAdd(key)) return false;
         ServerWorld w = server.getWorld(key);
-        if (w!=null) return false;
+        if (w != null) return false;
 
         /* creates the dimension datapack */
         RandomDimension d = Events.postInfinityDimAdded(server, id);
 
         if (!RandomProvider.rule("runtimeGenerationEnabled")) return false;
-        ((MinecraftServerAccess)(server)).infinity$addWorld(
-                key, (new DimensionGrabber(server.getRegistryManager())).grab_all(d)); // create the dimension
-        server.getPlayerManager().getPlayerList().forEach(
-                a -> sendNewWorld(a, id, d)); //and send everyone its data for clientside updating
+        ((MinecraftServerAccess) (server)).infinity$addWorld(key, (new DimensionGrabber(server.getRegistryManager())).grab_all(d));
+        server.getPlayerManager().getPlayerList().forEach(a -> sendNewWorld(a, id, d));
         return true;
     }
 
@@ -278,6 +230,7 @@ public interface PortalCreator {
             playSound(world, pos, SoundEvents.BLOCK_BEACON_ACTIVATE);
         }
     }
+
     static void playSound(ServerWorld world, BlockPos pos, SoundEvent soundEvent) {
         world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 1f, 1f);
     }
@@ -294,10 +247,12 @@ public interface PortalCreator {
         public PortalModifierUnion() {
             this(new ArrayList<>(), new ArrayList<>());
         }
+
         PortalModifierUnion addSetupper(Consumer<BlockPos> setupper) {
             setuppers.add(setupper);
             return this;
         }
+
         public PortalModifierUnion addModifier(Consumer<InfinityPortalBlockEntity> modifier) {
             modifiers.add(modifier);
             return this;
@@ -317,13 +272,14 @@ public interface PortalCreator {
         if (RandomProvider.rule("returnPortalsEnabled") &&
                 (registryKey.getValue().getNamespace().equals(InfinityMod.MOD_ID))) {
             BlockPos pos = BlockPos.ofFloored(teleportTarget.position);
-            for (BlockPos pos2: new BlockPos[] {pos, pos.add(1, 0, 0), pos.add(0, 0, 1),
-                    pos.add(-1, 0, 0), pos.add(0, 0, -1)}) if (destination.getBlockState(pos2).isOf(Blocks.NETHER_PORTAL)) {
-                bl = true;
-                Identifier dimensionName = registryKey.getValue();
-                PortalCreator.modifyPortalRecursive(destination, pos2, dimensionName, true);
-                break;
-            }
+            for (BlockPos pos2 : new BlockPos[]{pos, pos.add(1, 0, 0), pos.add(0, 0, 1),
+                    pos.add(-1, 0, 0), pos.add(0, 0, -1)})
+                if (destination.getBlockState(pos2).isOf(Blocks.NETHER_PORTAL)) {
+                    bl = true;
+                    Identifier dimensionName = registryKey.getValue();
+                    PortalCreator.modifyPortalRecursive(destination, pos2, dimensionName, true);
+                    break;
+                }
         }
         return bl;
     }
@@ -339,13 +295,11 @@ public interface PortalCreator {
             if (comp.contains(key, NbtElement.STRING_TYPE)) {
                 l = new NbtList();
                 l.add(comp.get(key));
-            }
-            else l = comp.getList(key, NbtElement.STRING_TYPE);
+            } else l = comp.getList(key, NbtElement.STRING_TYPE);
             l.add(NbtString.of(value));
             comp.remove(key);
             comp.put(key, l);
-        }
-        else comp.putString(key, value);
+        } else comp.putString(key, value);
         CommonIO.write(comp, dir, filename);
     }
 }

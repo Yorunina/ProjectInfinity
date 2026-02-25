@@ -30,7 +30,7 @@ public class InfinityPortalBlockEntity extends TintableBlockEntity {
     private BlockPos otherSidePos;
 
     public InfinityPortalBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.NEITHER_PORTAL.get(), pos, state);
+        super(ModBlockEntities.NETHER_PORTAL.get(), pos, state);
         this.propertyDelegate = new PropertyDelegate() {
             public int get(int index) {
                 if (index == 0) {

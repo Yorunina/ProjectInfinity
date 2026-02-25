@@ -35,7 +35,7 @@ public class ModPlacementModifiers {
 
         @Override
         public PlacementModifierType<?> getType() {
-            return PlacementModifierType.RARITY_FILTER;
+            return PROXIMITY.get();
         }
     }
 

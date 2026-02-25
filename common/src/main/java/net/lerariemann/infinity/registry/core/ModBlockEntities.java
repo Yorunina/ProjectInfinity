@@ -20,10 +20,10 @@ public class ModBlockEntities {
     }
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(InfinityMod.MOD_ID, RegistryKeys.BLOCK_ENTITY_TYPE);
 
-    public static final RegistrySupplier<BlockEntityType<InfinityPortalBlockEntity>> NEITHER_PORTAL =
-            BLOCK_ENTITY_TYPES.register("neither_portal", () ->
+    public static final RegistrySupplier<BlockEntityType<InfinityPortalBlockEntity>> NETHER_PORTAL =
+            BLOCK_ENTITY_TYPES.register("nether_portal", () ->
                     BlockEntityType.Builder.create(InfinityPortalBlockEntity::new,
-                            ModBlocks.PORTAL.get()).build(type("neither_portal")));
+                            ModBlocks.PORTAL.get()).build(type("nether_portal")));
     public static final RegistrySupplier<BlockEntityType<CosmicAltarBlockEntity>> COSMIC_ALTAR =
             BLOCK_ENTITY_TYPES.register("cosmic_altar", () ->
                     BlockEntityType.Builder.create(CosmicAltarBlockEntity::new,

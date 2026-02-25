@@ -65,14 +65,14 @@ public class RandomTree extends RandomisedFeature {
 
     NbtCompound trunkPlacer() {
         NbtCompound res = new NbtCompound();
-        res.putInt("base_height", random.nextInt(ishuge ? 32 : 8));
-        res.putInt("height_rand_a", random.nextInt(ishuge ? 24 : 4));
-        res.putInt("height_rand_b", random.nextInt(ishuge ? 24 : 4));
+        res.putInt("base_height", random.nextInt(ishuge ? 24 : 8));
+        res.putInt("height_rand_a", random.nextInt(ishuge ? 16 : 4));
+        res.putInt("height_rand_b", random.nextInt(ishuge ? 16 : 4));
         String type = PROVIDER.randomName(random, "trunk_placers");
         res.putString("type", type);
         switch (type) {
             case "bending_trunk_placer" -> {
-                addRandomIntProvider(res, "bend_length", 1, ishuge ? 63 : 8);
+                addRandomIntProvider(res, "bend_length", 1, ishuge ? 32 : 8);
                 res.putInt("min_height_for_leaves", 1 + (int) Math.floor(random.nextExponential()));
             }
             case "upwards_branching_trunk_placer" -> {
@@ -119,8 +119,8 @@ public class RandomTree extends RandomisedFeature {
             case "spruce_foliage_placer" -> res.put("trunk_height", NbtUtils.randomIntProvider(random, ishuge ? 24 : 6, true));
             case "mega_pine_foliage_placer" -> res.put("crown_height", NbtUtils.randomIntProvider(random, ishuge ? 24 : 6, true));
             case "random_spread_foliage_placer" -> {
-                addRandomIntProvider(res, "foliage_height", 1, ishuge ? 512 : 15);
-                res.putInt("leaf_placement_attempts", random.nextInt(256));
+                addRandomIntProvider(res, "foliage_height", 1, ishuge ? 64 : 15);
+                res.putInt("leaf_placement_attempts", random.nextInt(64));
             }
             case "cherry_foliage_placer" -> {
                 res.put("height", NbtUtils.randomIntProvider(random, 4, 15, true));
@@ -187,4 +187,3 @@ public class RandomTree extends RandomisedFeature {
         return res;
     }
 }
-

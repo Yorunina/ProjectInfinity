@@ -29,6 +29,9 @@ public class WeighedStructure<T> {
     public T getRandomElement(Random random) {
         return getRandomElement(random::nextDouble);
     }
+    public T getRandomElement(net.minecraft.util.math.random.Random random) {
+        return getRandomElement(random::nextDouble);
+    }
     public T getRandomElement(Supplier<Double> random) {
         return getElement(random.get());
     }

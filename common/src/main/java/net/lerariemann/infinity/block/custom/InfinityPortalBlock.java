@@ -343,7 +343,7 @@ public class InfinityPortalBlock extends NetherPortalBlock implements BlockEntit
 
         Set<BlockPos> allPortalsInRange = poiStorage.getInSquare(poiType ->
                                 poiType.matchesKey(PointOfInterestTypes.NETHER_PORTAL)
-                                        || poiType.matchesKey(ModPoi.NEITHER_PORTAL_KEY),
+                                        || poiType.matchesKey(ModPoi.NETHER_PORTAL_KEY),
                         originOfTesting, radiusOfTesting, PointOfInterestStorage.OccupationStatus.ANY)
                 .map(PointOfInterest::getPos)
                 .filter(wbTo::contains)

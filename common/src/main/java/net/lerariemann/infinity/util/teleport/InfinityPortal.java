@@ -204,7 +204,7 @@ public class InfinityPortal {
 
         //First scan for valid infinity portals
         Optional<BlockPos> portal = poiStorage.getInSquare(poiType ->
-                                poiType.matchesKey(ModPoi.NEITHER_PORTAL_KEY),
+                                poiType.matchesKey(ModPoi.NETHER_PORTAL_KEY),
                         originOfTesting, radiusOfTesting, PointOfInterestStorage.OccupationStatus.ANY)
                 .map(PointOfInterest::getPos)
                 .filter(wbTo::contains)

@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import dev.architectury.platform.Platform;
 import net.lerariemann.infinity.InfinityMod;
 import net.lerariemann.infinity.util.PlatformMethods;
-import net.lerariemann.infinity.compat.GravityChangerCompat;
 import net.lerariemann.infinity.access.MinecraftServerAccess;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
@@ -112,9 +111,6 @@ public abstract class MinecraftServerMixin implements MinecraftServerAccess {
             worlds.put(key, world);
             infinity$worldsToAdd.clear();
         }));
-        // Change world mavity via Gravity Changer if present.
-        if (Platform.isModLoaded("gravity_changer_q"))
-            GravityChangerCompat.changeMavity(world);
         // Invoke load world event for listeners.
         PlatformMethods.onWorldLoad(this, world);
     }

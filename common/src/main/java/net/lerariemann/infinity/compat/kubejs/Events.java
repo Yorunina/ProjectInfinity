@@ -2,7 +2,9 @@ package net.lerariemann.infinity.compat.kubejs;
 
 import net.lerariemann.infinity.compat.kubejs.events.InfinityDimAddedJS;
 import net.lerariemann.infinity.compat.kubejs.events.ItemInPortalJS;
+import net.lerariemann.infinity.compat.kubejs.events.TimeBombResetDimJS;
 import net.lerariemann.infinity.dimensions.RandomDimension;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
@@ -10,8 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import static net.lerariemann.infinity.InfinityMod.KUBEJS_LOADED;
-import static net.lerariemann.infinity.compat.kubejs.Plugin.DIM_ADDED_EVENT;
-import static net.lerariemann.infinity.compat.kubejs.Plugin.ITEM_IN_PORTAL_EVENT;
+import static net.lerariemann.infinity.compat.kubejs.Plugin.*;
 
 public class Events {
 
@@ -29,5 +30,11 @@ public class Events {
             return event.getTargetDim().wrapUp();
         }
         return dim.wrapUp();
+    }
+
+    public static void postTimeBombResetDim(World world, BlockState state) {
+        if (KUBEJS_LOADED) {
+            TIME_BOMB_RESET_DIM_EVENT.post(new TimeBombResetDimJS(world, state));
+        }
     }
 }

@@ -7,6 +7,7 @@ import dev.latvian.mods.kubejs.script.BindingsEvent;
 import net.lerariemann.infinity.block.entity.InfinityPortalBlockEntity;
 import net.lerariemann.infinity.compat.kubejs.events.InfinityDimAddedJS;
 import net.lerariemann.infinity.compat.kubejs.events.ItemInPortalJS;
+import net.lerariemann.infinity.compat.kubejs.events.TimeBombResetDimJS;
 import net.lerariemann.infinity.util.teleport.PortalCreator;
 
 public class Plugin extends KubeJSPlugin {
@@ -17,6 +18,9 @@ public class Plugin extends KubeJSPlugin {
             .server("itemInPortal", () -> ItemInPortalJS.class);
     public static EventHandler DIM_ADDED_EVENT = INF_EVENTS_GROUP
             .server("infinityDimAdded", () -> InfinityDimAddedJS.class);
+    public static EventHandler TIME_BOMB_RESET_DIM_EVENT = INF_EVENTS_GROUP
+            .server("timeBombResetDim", () -> TimeBombResetDimJS.class);
+
 
     @Override
     public void registerEvents() {

@@ -105,7 +105,7 @@
   "error.infinity.portal.cannot_create": "无法创建出口传送门，可能目标超出世界边界",
   "error.infinity.portal.unexpected": "发生了意外的传送错误，请联系Lera",
   "error.infinity.warp.malformed_identifier": "维度\"%s\"不存在。尝试使用/warp或/warp id",
-  "error.infinity.warp.timebombed": "维度\"%s\"已不存在。可以在重新加载世界后使用/warp id恢复",
+  "error.infinity.warp.timebombed": "维度\"%s\"已不存在。",
   "error.infinity.warp.unexpected": "发生了意外的传送错误，请联系Lera",
   "error.infinity.f4.no_charges": "你需要至少%s个充能才能使用此物品。在工作台中用黑曜石为其充能。",
   "fluid.infinity.iridescence": "虹彩",

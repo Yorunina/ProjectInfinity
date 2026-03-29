@@ -59,6 +59,7 @@ public class InfinityMod {
 		ModStats.registerStats();
 		ModCriteria.registerCriteria();
         GeneratorRegistry.register();
+        BiomeRegistry.register();
 		RandomText.walkPaths();
 		if (Platform.isModLoaded("kubejs")) {
 			KUBEJS_LOADED = true;

@@ -37,6 +37,7 @@ public class ChaosSlime extends SlimeEntity implements TintableEntity {
     public ChaosSlime(EntityType<? extends ChaosSlime> entityType, World world) {
         super(entityType, world);
     }
+
     @Override
     public int getAge() {
         return age;
@@ -82,6 +83,7 @@ public class ChaosSlime extends SlimeEntity implements TintableEntity {
     public void setColor(Vector3f c) {
         this.dataTracker.set(color, c);
     }
+
     @Override
     public Vector3f getColor() {
         return this.dataTracker.get(color);
@@ -90,9 +92,11 @@ public class ChaosSlime extends SlimeEntity implements TintableEntity {
     public void setCore(BlockState c) {
         this.dataTracker.set(core, c);
     }
+
     public BlockState getCore() {
         return this.dataTracker.get(core);
     }
+
     public BlockState getCoreForChild() {
         return Blocks.AIR.getDefaultState();
     }
@@ -101,22 +105,27 @@ public class ChaosSlime extends SlimeEntity implements TintableEntity {
     protected ParticleEffect getParticles() {
         return new DustParticleEffect(particleColorFromInt(this.getColorRaw()), 1.0f);
     }
+
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
         return this.getCore().getBlock().getSoundGroup(this.getCore()).getHitSound();
     }
+
     @Override
     protected SoundEvent getDeathSound() {
         return this.getCore().getBlock().getSoundGroup(this.getCore()).getBreakSound();
     }
+
     @Override
     protected SoundEvent getSquishSound() {
         return this.getCore().getBlock().getSoundGroup(this.getCore()).getStepSound();
     }
+
     @Override
     protected SoundEvent getJumpSound() {
         return this.getCore().getBlock().getSoundGroup(this.getCore()).getFallSound();
     }
+
     @Override
     public Identifier getLootTableId() {
         return this.getCore().getBlock().getLootTableId();
@@ -125,17 +134,20 @@ public class ChaosSlime extends SlimeEntity implements TintableEntity {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putFloat("red", this.dataTracker.get(color).x);
-        nbt.putFloat("green", this.dataTracker.get(color).y);
-        nbt.putFloat("blue", this.dataTracker.get(color).z);
-        nbt.putString("core", Registries.BLOCK.getId(this.getCore().getBlock()).toString());
+        NbtCompound chaosSetting = new NbtCompound();
+        chaosSetting.putFloat("red", this.dataTracker.get(color).x);
+        chaosSetting.putFloat("green", this.dataTracker.get(color).y);
+        chaosSetting.putFloat("blue", this.dataTracker.get(color).z);
+        chaosSetting.putString("core", Registries.BLOCK.getId(this.getCore().getBlock()).toString());
+        nbt.put("ChaosSetting", chaosSetting);
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        this.setColor(new Vector3f(nbt.getFloat("red"), nbt.getFloat("green"), nbt.getFloat("blue")));
-        Block b = Registries.BLOCK.get(new Identifier(nbt.getString("core")));
+        NbtCompound chaosSetting = nbt.getCompound("ChaosSetting");
+        this.setColor(new Vector3f(chaosSetting.getFloat("red"), chaosSetting.getFloat("green"), chaosSetting.getFloat("blue")));
+        Block b = Registries.BLOCK.get(new Identifier(chaosSetting.getString("core")));
         this.setCore(b.getDefaultState());
     }
 

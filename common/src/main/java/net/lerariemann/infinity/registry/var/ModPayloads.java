@@ -1,7 +1,6 @@
 package net.lerariemann.infinity.registry.var;
 
 import dev.architectury.platform.Platform;
-import net.lerariemann.infinity.iridescence.Iridescence;
 import net.lerariemann.infinity.item.F4Item;
 import net.lerariemann.infinity.registry.core.ModComponentTypes;
 import net.lerariemann.infinity.registry.core.ModItems;
@@ -35,15 +34,13 @@ public class ModPayloads {
     public static final Identifier STARS_RELOAD = getId("reload_stars");
     public static final Identifier UPDATE_F4 = getId("update_f4");
     public static final Identifier DEPLOY_F4 = getId("deploy_f4");
-    public static final Identifier UPLOAD_JUKEBOXES = getId("upload_jukeboxes");
 
 
     public static PacketByteBuf buildPacket(ServerWorld destination, ServerPlayerEntity player) {
-        return buildPacket(destination, Iridescence.shouldApplyShader(player));
+        return buildPacket(destination);
     }
-    public static PacketByteBuf buildPacket(ServerWorld destination, boolean bl) {
+    public static PacketByteBuf buildPacket(ServerWorld destination) {
         PacketByteBuf buf = PlatformMethods.createPacketByteBufs();
-        buf.writeBoolean(bl);
         if (destination == null) buf.writeNbt(new NbtCompound());
         else buf.writeNbt(((InfinityOptionsAccess)(destination)).infinity$getOptions().data());
         return buf;
@@ -54,19 +51,15 @@ public class ModPayloads {
     }
 
     public static void receiveShader(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf) {
-        if (buf.readBoolean()) {
-            client.execute(() -> ShaderLoader.reloadShaders(client, true, true));
-            return;
-        }
         InfinityOptions options = new InfinityOptions(buf.readNbt());
         ((InfinityOptionsAccess)client).infinity$setOptions(options);
         NbtCompound shader = options.getShader();
         boolean bl = shader.isEmpty();
-        if (bl) client.execute(() -> ShaderLoader.reloadShaders(client, false, false));
+        if (bl) client.execute(() -> ShaderLoader.reloadShaders(client, false));
         else {
             client.execute(() -> {
                 CommonIO.write(shader, ShaderLoader.shaderDir(client), ShaderLoader.FILENAME);
-                ShaderLoader.reloadShaders(client, true,false);
+                ShaderLoader.reloadShaders(client, true);
                 if (!resourcesReloaded) {
                     client.reloadResources();
                     resourcesReloaded = true;

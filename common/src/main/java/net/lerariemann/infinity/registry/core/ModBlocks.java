@@ -32,22 +32,14 @@ public class ModBlocks {
             new SlabBlock(AbstractBlock.Settings.copy(Blocks.NETHERITE_BLOCK)));
     public static final RegistrySupplier<Block> TIME_BOMB = BLOCKS.register("timebomb", () ->
             new TimeBombBlock(AbstractBlock.Settings.copy(Blocks.BEDROCK).nonOpaque().luminance(state -> 15)));
-    public static final RegistrySupplier<FluidBlock> IRIDESCENCE = PlatformMethods.getIridBlockForReg();
+
     public static final RegistrySupplier<Block> BIOME_BOTTLE = BLOCKS.register("biome_bottle", () ->
             new BiomeBottleBlock(AbstractBlock.Settings.copy(Blocks.BEACON).luminance(state -> state.get(BiomeBottleBlock.LEVEL))
                     .sounds(BlockSoundGroup.GLASS)));
-    public static final RegistrySupplier<Block> IRIDESCENT_WOOL = BLOCKS.register("iridescent_wool", () ->
-            new IridescentBlock(AbstractBlock.Settings.copy(Blocks.MAGENTA_WOOL)));
-    public static final RegistrySupplier<Block> IRIDESCENT_CARPET = BLOCKS.register("iridescent_carpet", () ->
-            new IridescentBlock.Carpet(AbstractBlock.Settings.copy(Blocks.MAGENTA_CARPET)));
     public static final RegistrySupplier<Block> CHROMATIC_WOOL = BLOCKS.register("chromatic_wool", () ->
             new ChromaticBlock(AbstractBlock.Settings.copy(Blocks.MAGENTA_WOOL)));
     public static final RegistrySupplier<Block> CHROMATIC_CARPET = BLOCKS.register("chromatic_carpet", () ->
             new ChromaticBlock.Carpet(AbstractBlock.Settings.copy(Blocks.MAGENTA_CARPET)));
-    public static final RegistrySupplier<IridescentKelpBlock> IRIDESCENT_KELP = BLOCKS.register("iridescent_kelp", () ->
-            new IridescentKelpBlock(AbstractBlock.Settings.copy(Blocks.KELP).mapColor(MapColor.MAGENTA)));
-    public static final RegistrySupplier<IridescentKelpBlock.Plant> IRIDESCENT_KELP_PLANT = BLOCKS.register("iridescent_kelp_plant", () ->
-            new IridescentKelpBlock.Plant(AbstractBlock.Settings.copy(Blocks.KELP).mapColor(MapColor.MAGENTA)));
     public static final RegistrySupplier<Block> NOTES_BLOCK = BLOCKS.register("notes_block", () ->
             new NotesBlock(AbstractBlock.Settings.copy(Blocks.NOTE_BLOCK).ticksRandomly()));
     public static final RegistrySupplier<RailHelper> RAIL_HELPER = BLOCKS.register("rail_helper", () ->
@@ -59,8 +51,6 @@ public class ModBlocks {
     }
 
     public static void registerFlammableBlocks() {
-        PlatformMethods.registerFlammableBlock(ModBlocks.IRIDESCENT_WOOL, 60, 30);
-        PlatformMethods.registerFlammableBlock(ModBlocks.IRIDESCENT_CARPET, 20, 60);
         PlatformMethods.registerFlammableBlock(ModBlocks.CHROMATIC_WOOL, 60, 30);
         PlatformMethods.registerFlammableBlock(ModBlocks.CHROMATIC_CARPET, 20, 60);
     }

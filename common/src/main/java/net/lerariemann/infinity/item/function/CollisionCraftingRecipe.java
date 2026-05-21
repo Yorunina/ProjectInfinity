@@ -52,8 +52,7 @@ public abstract class CollisionCraftingRecipe implements Recipe<Inventory> {
     }
 
     public enum Type implements RecipeType<CollisionCraftingRecipe> {
-        PORTAL,
-        IRIDESCENCE
+        PORTAL
     }
 
     public record Serializer(BiFunction<Ingredient, ItemStack, CollisionCraftingRecipe> func)
@@ -99,31 +98,6 @@ public abstract class CollisionCraftingRecipe implements Recipe<Inventory> {
         @Override
         public RecipeType<?> getType() {
             return ModItemFunctions.PORTAL_CRAFTING_TYPE.get();
-        }
-    }
-
-    public static class OfIridescence extends CollisionCraftingRecipe {
-        ItemStack output;
-
-        public OfIridescence(Ingredient input, ItemStack output) {
-            super(input, output);
-            this.output = output;
-        }
-
-        @Override
-        public Identifier getId() {
-            Identifier id = Registries.ITEM.getId(output.getItem());
-            return Identifier.of(id.getNamespace(), id.getPath()+"_of_iridescence");
-        }
-
-        @Override
-        public RecipeSerializer<?> getSerializer() {
-            return ModItemFunctions.IRIDESCENCE_CRAFTING.get();
-        }
-
-        @Override
-        public RecipeType<?> getType() {
-            return ModItemFunctions.IRIDESCENCE_CRAFTING_TYPE.get();
         }
     }
 }

@@ -2,7 +2,6 @@ package net.lerariemann.infinity.entity.custom;
 
 import net.lerariemann.infinity.InfinityMod;
 import net.lerariemann.infinity.access.MobEntityAccess;
-import net.lerariemann.infinity.iridescence.Iridescence;
 import net.lerariemann.infinity.util.core.RandomProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -21,7 +20,6 @@ import net.minecraft.entity.mob.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.*;
@@ -124,7 +122,7 @@ public class ChaosPawn extends AbstractChessFigure {
 
     @Override
     public boolean isBlackOrWhite() {
-        return dataTracker.get(special_case) != -1 && !Iridescence.isUnderEffect(this);
+        return dataTracker.get(special_case) != -1;
     }
 
     public void initFromBlock(BlockState state) {

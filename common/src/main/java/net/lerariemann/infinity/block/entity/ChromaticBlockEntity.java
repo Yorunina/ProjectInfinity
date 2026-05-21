@@ -116,18 +116,6 @@ public class ChromaticBlockEntity extends TintableBlockEntity {
         return true;
     }
 
-    public void onIridStarUse(boolean reverse) {
-        if (reverse) {
-            hue -= 10;
-            if (hue < 0) hue += 360;
-        }
-        else {
-            hue += 10;
-            if (hue > 360) hue -= 360;
-        }
-        updateColor();
-        sync();
-    }
 
     void sync() {
         markDirty();

@@ -24,7 +24,6 @@ public class InfinityOptions {
     public NbtCompound data;
     public PitchShifter shifter;
     public EffectGiver effect;
-    public IridescentMap iridMap;
 
     public static NbtCompound defaultShader = new NbtCompound();
 
@@ -32,7 +31,6 @@ public class InfinityOptions {
         this.data = data;
         this.shifter = PitchShifter.decode(test(data, "pitch_shift", new NbtCompound()));
         this.effect = EffectGiver.of(test(data, "effect", new NbtCompound()));
-        this.iridMap = IridescentMap.decode(test(data, "iridescent_map", new NbtCompound()));
     }
 
     public NbtCompound data() {

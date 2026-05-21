@@ -13,8 +13,6 @@
     "maxBiomeCount": 6,
     "maxDimensionScale": 0,
     "avgDimensionHeight": 256,
-    "iridescenceInitialDuration": 30,
-    "iridescenceCooldownDuration": 168,
     "afterglowDuration": 24,
     "resetChargeCooldown": 6000
   },

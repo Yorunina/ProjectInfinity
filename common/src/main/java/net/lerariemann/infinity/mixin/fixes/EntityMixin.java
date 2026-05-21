@@ -61,26 +61,5 @@ public abstract class EntityMixin {
             }
         }
     }
-
-    /* Forge-specific mixins to allow mobs to swim in iridescence */
-    @Inject(method="updateMovementInFluid", at = @At(value = "RETURN"), cancellable = true)
-    void inj(TagKey<Fluid> tag, double speed, CallbackInfoReturnable<Boolean> cir) {
-        if (tag.equals(FluidTags.WATER))
-            if (PlatformMethods.acidTest((Entity)(Object)this, false))
-                cir.setReturnValue(true);
-    }
-
-    @Inject(method = "isSubmergedIn", at = @At("RETURN"), cancellable = true)
-    void inj(TagKey<Fluid> fluidTag, CallbackInfoReturnable<Boolean> cir) {
-        if (fluidTag.equals(FluidTags.WATER))
-            if (PlatformMethods.acidTest((Entity)(Object)this, true))
-                cir.setReturnValue(true);
-    }
-
-    @Inject(method = "getFluidHeight", at = @At("RETURN"), cancellable = true)
-    void inj2(TagKey<Fluid> fluid, CallbackInfoReturnable<Double> cir) {
-        if (fluid.equals(FluidTags.WATER))
-            cir.setReturnValue(Math.max(cir.getReturnValue(), PlatformMethods.acidHeightTest((Entity)(Object)this)));
-    }
 }
 

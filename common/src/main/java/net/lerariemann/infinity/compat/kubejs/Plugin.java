@@ -4,6 +4,7 @@ import dev.latvian.mods.kubejs.KubeJSPlugin;
 import dev.latvian.mods.kubejs.event.EventGroup;
 import dev.latvian.mods.kubejs.event.EventHandler;
 import dev.latvian.mods.kubejs.script.BindingsEvent;
+import net.lerariemann.infinity.InfinityMod;
 import net.lerariemann.infinity.block.entity.InfinityPortalBlockEntity;
 import net.lerariemann.infinity.compat.kubejs.events.InfinityDimAddedJS;
 import net.lerariemann.infinity.compat.kubejs.events.ItemInPortalJS;
@@ -21,7 +22,6 @@ public class Plugin extends KubeJSPlugin {
     public static EventHandler TIME_BOMB_RESET_DIM_EVENT = INF_EVENTS_GROUP
             .server("timeBombResetDim", () -> TimeBombResetDimJS.class);
 
-
     @Override
     public void registerEvents() {
         INF_EVENTS_GROUP.register();
@@ -31,5 +31,6 @@ public class Plugin extends KubeJSPlugin {
     public void registerBindings(BindingsEvent event) {
         event.add("InfinityPortalCreator", PortalCreator.class);
         event.add("InfinityPortalBlockEntity", InfinityPortalBlockEntity.class);
+        event.add("InfinityMod", InfinityMod.class);
     }
 }

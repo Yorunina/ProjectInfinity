@@ -3,13 +3,9 @@ package net.lerariemann.infinity.util.forge;
 import dev.architectury.registry.registries.RegistrySupplier;
 import io.netty.buffer.Unpooled;
 import net.lerariemann.infinity.item.forge.StarOfLangItemForge;
-import net.lerariemann.infinity.fluids.forge.FluidTypes;
 import net.lerariemann.infinity.item.StarOfLangItem;
 import net.lerariemann.infinity.util.PlatformMethods;
 import net.lerariemann.infinity.platform.forge.ForgePlatformImpl;
-import net.lerariemann.infinity.registry.core.ModBlocks;
-import net.lerariemann.infinity.fluids.forge.IridescenceLiquidBlockForge;
-import net.lerariemann.infinity.fluids.forge.ModFluidsForge;
 import net.lerariemann.infinity.util.InfinityMethods;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
@@ -29,7 +25,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 
@@ -67,20 +62,6 @@ public class PlatformMethodsImpl {
         // Forge implementation would use different approach
     }
 
-    public static RegistrySupplier<ForgeFlowingFluid.Source> getIridescenceStill() {
-        return ModFluidsForge.IRIDESCENCE_STILL;
-    }
-
-    public static RegistrySupplier<ForgeFlowingFluid.Flowing> getIridescenceFlowing() {
-        return ModFluidsForge.IRIDESCENCE_FLOWING;
-    }
-
-    public static RegistrySupplier<FluidBlock> getIridBlockForReg() {
-        return ModBlocks.BLOCKS.register("iridescence", () ->
-                new IridescenceLiquidBlockForge(PlatformMethods.getIridescenceStill(), AbstractBlock.Settings.copy(Blocks.WATER)
-                                .mapColor(MapColor.MAGENTA)));
-    }
-
     public static Path getRootConfigPath() {
         return ModLoadingContext.get().getActiveContainer().getModInfo().getOwningFile().getFile().findResource("config");
     }
@@ -98,17 +79,6 @@ public class PlatformMethodsImpl {
 
     public static void registerFlammableBlock(RegistrySupplier<Block> block, int burn, int spread) {
         // Forge implementation would use different approach
-    }
-
-    public static boolean acidTest(Entity entity, boolean eyes) {
-        if (entity instanceof PlayerEntity) return false;
-        if (eyes) return entity.isEyeInFluidType(ModFluidsForge.IRIDESCENCE_TYPE.get());
-        return entity.isInFluidType(ModFluidsForge.IRIDESCENCE_TYPE.get());
-    }
-
-    public static double acidHeightTest(Entity entity) {
-        if (entity instanceof PlayerEntity) return -1;
-        return entity.getFluidTypeHeight(ModFluidsForge.IRIDESCENCE_TYPE.get());
     }
 
     public static Function<Item.Settings, ? extends StarOfLangItem> getStarOfLangConstructor() {

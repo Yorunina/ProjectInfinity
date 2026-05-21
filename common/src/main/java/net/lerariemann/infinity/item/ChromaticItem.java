@@ -5,7 +5,6 @@ import net.lerariemann.infinity.block.entity.ChromaticBlockEntity;
 import net.lerariemann.infinity.block.entity.InfinityPortalBlockEntity;
 import net.lerariemann.infinity.registry.core.ModBlocks;
 import net.lerariemann.infinity.registry.core.ModComponentTypes;
-import net.lerariemann.infinity.registry.var.ModTags;
 import net.lerariemann.infinity.util.BackportMethods;
 import net.lerariemann.infinity.util.var.ColorLogic;
 import net.minecraft.block.BlockState;
@@ -97,7 +96,6 @@ public class ChromaticItem extends Item implements PortalDataHolder {
             return true;
         }
         else { //paste color to blocks
-            if (oldState.isIn(ModTags.IRIDESCENT_BLOCKS)) return false;
             boolean bl = BackportMethods.contains(currStack, ModComponentTypes.DYE_COLOR);
             BlockState state;
             if (bl) state = ColorLogic.recolor(BackportMethods.getOrDefaultString(currStack, ModComponentTypes.DYE_COLOR, null), oldState);

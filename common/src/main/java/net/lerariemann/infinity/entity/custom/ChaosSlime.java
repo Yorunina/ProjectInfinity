@@ -5,9 +5,7 @@ import net.lerariemann.infinity.util.InfinityMethods;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntityData;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -47,6 +45,11 @@ public class ChaosSlime extends SlimeEntity implements TintableEntity {
     @Override
     public boolean hasCustomName() {
         return super.hasCustomName();
+    }
+
+    @Override
+    public EntityDimensions getDimensions(EntityPose pose) {
+        return super.getDimensions(pose).scaled(4);
     }
 
     @Override

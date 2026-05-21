@@ -44,10 +44,6 @@ public class ModItems {
             registerBlockItemAfter(ModBlocks.NOTES_BLOCK, ItemGroups.FUNCTIONAL, Items.NOTE_BLOCK, BlockItem::new);
     public static final RegistrySupplier<Item> TIME_BOMB_ITEM =
             registerBlockItemAfter(ModBlocks.TIME_BOMB, ItemGroups.FUNCTIONAL, Items.BEACON, BlockItem::new);
-    public static final RegistrySupplier<Item> IRIDESCENT_WOOL  =
-            registerBlockItemAfter(ModBlocks.IRIDESCENT_WOOL, ItemGroups.COLORED_BLOCKS, Items.PINK_WOOL, BlockItem::new);
-    public static final RegistrySupplier<Item> IRIDESCENT_CARPET  =
-            registerBlockItemAfter(ModBlocks.IRIDESCENT_CARPET, ItemGroups.COLORED_BLOCKS, Items.PINK_CARPET, BlockItem::new);
     public static final RegistrySupplier<ChromaticBlockItem> CHROMATIC_WOOL  =
             registerBlockItemAfter(ModBlocks.CHROMATIC_WOOL, ItemGroups.COLORED_BLOCKS, Items.PINK_WOOL,
                     new Item.Settings(),
@@ -77,9 +73,7 @@ public class ModItems {
     public static final RegistrySupplier<Item> BISHOP_SPAWN_EGG = ITEMS.register("bishop_spawn_egg",  () ->
             new ArchitecturySpawnEggItem(ModEntities.BISHOP, 0, 0xFFFFFF,
                     createSpawnEggSettings()));
-    //bucket
-    public static final RegistrySupplier<Item> IRIDESCENCE_BUCKET = ITEMS.register("iridescence_bucket", () ->
-            new ArchitecturyBucketItem(PlatformMethods.getIridescenceStill(), new Item.Settings().recipeRemainder(Items.BUCKET).maxCount(1)));
+
     //misc
     public static final RegistrySupplier<Item> FOOTPRINT =
             registerItemAfter("footprint", ItemGroups.INGREDIENTS, Items.DISC_FRAGMENT_5, Item::new);
@@ -94,21 +88,12 @@ public class ModItems {
             registerItemAfter("white_matter", ItemGroups.INGREDIENTS, Items.DISC_FRAGMENT_5, Item::new);
     public static final RegistrySupplier<Item> BLACK_MATTER =
             registerItemAfter("black_matter", ItemGroups.INGREDIENTS, Items.DISC_FRAGMENT_5, Item::new);
-    public static final RegistrySupplier<Item> IRIDESCENT_STAR =
-            registerItemAfter("iridescent_star", ItemGroups.INGREDIENTS, Items.NETHER_STAR, GlintItem::new,
-                    new Item.Settings().rarity(Rarity.UNCOMMON));
     public static final RegistrySupplier<? extends StarOfLangItem> STAR_OF_LANG =
             registerItemAfter("star_of_lang", ItemGroups.INGREDIENTS, Items.NETHER_STAR, PlatformMethods.getStarOfLangConstructor(),
                     new Item.Settings());
     public static final RegistrySupplier<F4Item> F4 =
             registerItemAfter("f4", ItemGroups.TOOLS, Items.WRITABLE_BOOK, F4Item::new,
                     new Item.Settings().rarity(Rarity.UNCOMMON));
-    public static final RegistrySupplier<Item> IRIDESCENT_POTION =
-            registerItemAfter("iridescent_potion", ItemGroups.FOOD_AND_DRINK, Items.HONEY_BOTTLE, IridescentPotionItem::new,
-                    new Item.Settings());
-    public static final RegistrySupplier<Item> CHROMATIC_POTION =
-            registerItemAfter("chromatic_potion", ItemGroups.FOOD_AND_DRINK, Items.HONEY_BOTTLE, IridescentPotionItem::new,
-                    new Item.Settings());
 
     public static <T extends Item> RegistrySupplier<T> register(String item, Item.Settings settings, Function<Item.Settings, T> constructor) {
         return ITEMS.register(item, () -> constructor.apply(settings));
@@ -166,7 +151,6 @@ public class ModItems {
     }
 
     public static void registerModItems() {
-        addAfter(IRIDESCENCE_BUCKET, ItemGroups.TOOLS, Items.MILK_BUCKET);
         InfinityMod.LOGGER.debug("Registering items for " + MOD_ID);
         ITEMS.register();
     }

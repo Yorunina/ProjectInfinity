@@ -7,15 +7,10 @@ import net.lerariemann.infinity.access.MobEntityAccess;
 import net.lerariemann.infinity.compat.CreateCompat;
 import net.lerariemann.infinity.compat.forge.CanaryCompat;
 import net.lerariemann.infinity.compat.forge.RadiumCompat;
-import net.lerariemann.infinity.fluids.forge.FluidTypes;
-import net.lerariemann.infinity.fluids.forge.ModEffectsForge;
-import net.lerariemann.infinity.fluids.forge.ModFluidsForge;
 import net.lerariemann.infinity.forge.client.InfinityModForgeClient;
 import net.lerariemann.infinity.registry.core.*;
 import net.lerariemann.infinity.registry.var.ModStats;
-import net.lerariemann.infinity.registry.var.ModTags;
 import net.lerariemann.infinity.util.InfinityMethods;
-import net.minecraft.registry.tag.ItemTags;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.MobSpawnEvent;
@@ -52,9 +47,6 @@ public final class InfinityModForge {
         eventBus.addListener(InfinityModForge::commonSetup);
         MinecraftForge.EVENT_BUS.addListener(InfinityModForge::sliderSpamFix);
 
-        ModFluidsForge.registerModFluids(eventBus);
-        ModEffectsForge.register(eventBus);
-        ModTags.IRIDESCENT_ITEMS = ItemTags.create(InfinityMethods.getId("iridescent"));
     }
 
     @SubscribeEvent
@@ -72,14 +64,8 @@ public final class InfinityModForge {
     @SubscribeEvent
     public static void commonSetup(FMLCommonSetupEvent event) {
         ModStats.load();
-        ModStatusEffects.IRIDESCENT_EFFECT = ModEffectsForge.IRIDESCENT_EFFECT.getHolder().get();
-        ModStatusEffects.IRIDESCENT_SETUP = ModEffectsForge.IRIDESCENT_SETUP.getHolder().get();
-        ModStatusEffects.IRIDESCENT_COOLDOWN = ModEffectsForge.IRIDESCENT_COOLDOWN.getHolder().get();
-        ModStatusEffects.AFTERGLOW = ModEffectsForge.AFTERGLOW.getHolder().get();
         ModBlocks.registerFlammableBlocks();
-        ModItemFunctions.registerDispenserBehaviour();
         if (isCreateLoaded())
             CreateCompat.register();
-        ModFluidsForge.registerFluidInteractions();
     }
 }

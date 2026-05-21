@@ -1,6 +1,5 @@
 package net.lerariemann.infinity.entity.custom;
 
-import net.lerariemann.infinity.iridescence.Iridescence;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.*;
@@ -12,7 +11,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.scoreboard.AbstractTeam;
-import net.minecraft.scoreboard.Team;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -111,7 +109,6 @@ public abstract class AbstractChessFigure extends HostileEntity implements Anger
     @Override
     public float getPathfindingFavor(BlockPos pos, WorldView world) {
         if (!isBlackOrWhite()) return 0.0f;
-        if (Iridescence.isIridescence(world, pos)) return -1.0F;
         return 0.0f;
     }
 
@@ -131,7 +128,7 @@ public abstract class AbstractChessFigure extends HostileEntity implements Anger
     }
 
     public boolean shouldPursueRegularGoals() {
-        return (!Iridescence.isUnderEffect(this));
+        return true;
     }
     public boolean shouldPursueChessGoals() {
         return shouldPursueRegularGoals() && isBlackOrWhite();
@@ -224,7 +221,6 @@ public abstract class AbstractChessFigure extends HostileEntity implements Anger
             this.mob.universallyAnger();
             this.getOthersInRange().stream().filter(entity -> {
                 if (entity == mob) return false;
-                if (Iridescence.isUnderEffect(entity)) return false;
                 if (entity instanceof AbstractChessFigure) {
                     return isAngerCompatible(mob, entity);
                 }
@@ -255,7 +251,6 @@ public abstract class AbstractChessFigure extends HostileEntity implements Anger
                     if (figure != pawn2
                             && pawn2.getTarget() == null
                             && !pawn2.isTeammate(figure.getAttacker())
-                            && !Iridescence.isUnderEffect(pawn2)
                             && isAngerCompatible(pawn2, figure))
                         this.setMobEntityTarget(pawn2, figure.getAttacker());
                 }

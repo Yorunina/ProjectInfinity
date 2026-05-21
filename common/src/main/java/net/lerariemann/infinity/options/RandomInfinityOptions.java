@@ -67,7 +67,6 @@ public class RandomInfinityOptions {
             NbtCompound effect = effect(r, prov);
             if (!effect.isEmpty()) data.put("effect", effect);
         }
-        data.put("iridescent_map", iridMap(r));
     }
 
     public static double timeScale(Random r) {
@@ -130,14 +129,4 @@ public class RandomInfinityOptions {
         return res;
     }
 
-    public static NbtCompound iridMap(Random r) {
-        NbtCompound res = new NbtCompound();
-        res.putString("type", switch (r.nextInt(4)) {
-            case 0 -> "static";
-            case 1 -> "linear";
-            case 2 -> "circles";
-            default -> "noise";
-        });
-        return res;
-    }
 }

@@ -104,24 +104,6 @@ public class ModCriteria {
         }
     }
 
-    public static class IridescentCriterion extends AbstractCriterion<EmptyConditions> {
-        static final Identifier ID = InfinityMethods.getId("iridescence");
-
-        public void trigger(ServerPlayerEntity player, boolean willing, int level) {
-            this.trigger(player, (conditions) -> true);
-        }
-
-
-        @Override
-        protected EmptyConditions conditionsFromJson(JsonObject obj, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer) {
-            return new EmptyConditions(lootContextPredicate, ID);
-        }
-
-        @Override
-        public Identifier getId() {
-            return ID;
-        }
-    }
 
     public static class ConvertMobCriterion extends AbstractCriterion<DataConditions> {
         static final Identifier ID = InfinityMethods.getId("convert_mob");
@@ -206,7 +188,6 @@ public class ModCriteria {
     public static DimensionOpenedCriterion DIMS_OPENED;
     public static DimensionClosedCriterion DIMS_CLOSED;
     public static WhoRemainsCriterion WHO_REMAINS;
-    public static IridescentCriterion IRIDESCENT;
     public static BiomeBottleCriterion BIOME_BOTTLE;
     public static ConvertMobCriterion CONVERT_MOB;
 
@@ -214,7 +195,6 @@ public class ModCriteria {
         DIMS_OPENED = Criteria.register(new DimensionOpenedCriterion());
         DIMS_CLOSED = Criteria.register(new DimensionClosedCriterion());
         WHO_REMAINS = Criteria.register(new WhoRemainsCriterion());
-        IRIDESCENT = Criteria.register(new IridescentCriterion());
         BIOME_BOTTLE = Criteria.register(new BiomeBottleCriterion());
         CONVERT_MOB = Criteria.register(new ConvertMobCriterion());
     }

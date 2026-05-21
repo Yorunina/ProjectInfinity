@@ -62,14 +62,9 @@ public class ModItemFunctions {
     public static RegistrySupplier<RecipeSerializer<CollisionCraftingRecipe>> PORTAL_CRAFTING =
             RECIPE_SERIALIZERS.register("collision_portal", () ->
                     new CollisionCraftingRecipe.Serializer(CollisionCraftingRecipe.OfPortal::new));
-    public static RegistrySupplier<RecipeSerializer<CollisionCraftingRecipe>> IRIDESCENCE_CRAFTING =
-            RECIPE_SERIALIZERS.register("collision_iridescence", () ->
-                    new CollisionCraftingRecipe.Serializer(CollisionCraftingRecipe.OfIridescence::new));
 
     public static RegistrySupplier<RecipeType<CollisionCraftingRecipe>> PORTAL_CRAFTING_TYPE =
             RECIPE_TYPES.register("collision_portal", () -> CollisionCraftingRecipe.Type.PORTAL);
-    public static RegistrySupplier<RecipeType<CollisionCraftingRecipe>> IRIDESCENCE_CRAFTING_TYPE =
-            RECIPE_TYPES.register("collision_iridescence", () -> CollisionCraftingRecipe.Type.IRIDESCENCE);
 
     public static void registerItemFunctions() {
         LOOT_FUNCTION_TYPES.register();
@@ -77,22 +72,6 @@ public class ModItemFunctions {
         RECIPE_TYPES.register();
     }
 
-    public static void registerDispenserBehaviour() {
-        DispenserBlock.registerBehavior(ModItems.IRIDESCENCE_BUCKET.get(), new ItemDispenserBehavior() {
-            public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-                FluidModificationItem fluidModificationItem = (FluidModificationItem)stack.getItem();
-                BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-                World world = pointer.getWorld();
-                if (fluidModificationItem.placeFluid(null, world, blockPos, null)) {
-                    fluidModificationItem.onEmptied(null, world, stack, blockPos);
-                    Item remainder = stack.getItem().getRecipeRemainder();
-                    return remainder != null ? new ItemStack(remainder) : ItemStack.EMPTY;
-                } else {
-                    return new ItemDispenserBehavior().dispense(pointer, stack);
-                }
-            }
-        });
-    }
 
     public static void checkCollisionRecipes(ServerWorld w, ItemEntity itemEntity, RecipeType<CollisionCraftingRecipe> recipeType, NbtCompound compound) {
         if (itemEntity.isRemoved()) return;
@@ -133,12 +112,6 @@ public class ModItemFunctions {
         itemEntity.remove(Entity.RemovalReason.CHANGED_DIMENSION);
     }
 
-    @Deprecated
-    @Environment(EnvType.CLIENT)
-    public static float iridPredicate(@Nullable ItemStack stack, ClientWorld world, @Nullable LivingEntity entity, int seed) {
-        if (entity == null) return 0;
-        return (InfinityOptions.access(world).iridMap.getColor(entity.getBlockPos()) / 100.0f);
-    }
 
     @Environment(EnvType.CLIENT)
     public static void registerModelPredicates() {

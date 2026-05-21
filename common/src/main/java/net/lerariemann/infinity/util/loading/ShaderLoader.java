@@ -3,7 +3,6 @@ package net.lerariemann.infinity.util.loading;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.lerariemann.infinity.access.GameRendererAccess;
-import net.lerariemann.infinity.iridescence.Iridescence;
 import net.lerariemann.infinity.util.InfinityMethods;
 import net.lerariemann.infinity.util.core.CommonIO;
 import net.minecraft.client.MinecraftClient;
@@ -21,16 +20,10 @@ public interface ShaderLoader {
         return client.getResourcePackDir().resolve("infinity/assets/infinity/shaders");
     }
 
-    static void reloadShaders(MinecraftClient client, boolean bl) {
-        reloadShaders(client, bl, Iridescence.shouldApplyShader(client.player));
-    }
 
-    static void reloadShaders(MinecraftClient client, boolean bl, boolean iridescence) {
+    static void reloadShaders(MinecraftClient client, boolean bl) {
         if (client.world == null) return;
-        if (iridescence) {
-            ((GameRendererAccess)(client.gameRenderer)).infinity$loadPP(InfinityMethods.getId("shaders/post/iridescence.json"));
-            return;
-        }
+
         try {
             load(client);
         } catch (IOException e) {

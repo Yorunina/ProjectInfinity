@@ -98,6 +98,12 @@ public interface PortalCreator {
         return true;
     }
 
+    static void addInfinityDimensionIfNotExists(MinecraftServer server, Identifier dimName) {
+        if (!server.getWorldRegistryKeys().contains(RegistryKey.of(RegistryKeys.WORLD, dimName))) {
+            tryAddInfinityDimension(server, dimName);
+        }
+    }
+
     /* Calls to open the portal and attributes the relevant statistics to a player provided. */
     static void openWithStatIncrease(PlayerEntity player, MinecraftServer s, ServerWorld world, BlockPos pos) {
         if (((MinecraftServerAccess) s).infinity$needsInvocation()) {

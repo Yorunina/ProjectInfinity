@@ -49,7 +49,6 @@ public class CavernGenerator extends ChunkGenerator {
             ).apply(instance, instance.stable(CavernGenerator::new)));
 
     public static boolean isOreWorld = false;
-    public static boolean enableBaseCommands = true;
     public static boolean glassOceanBulbs = true;
     public static BlockState baseMaterial = Blocks.DEEPSLATE.getDefaultState();
 

@@ -4,13 +4,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.architectury.registry.registries.DeferredRegister;
-import net.lerariemann.infinity.iridescence.Iridescence;
 import net.lerariemann.infinity.registry.core.ModBlocks;
 import net.lerariemann.infinity.registry.var.rules.CubeMaterial;
 import net.lerariemann.infinity.registry.var.rules.PerfectionMaterial;
 import net.lerariemann.infinity.util.InfinityMethods;
 import net.lerariemann.infinity.util.core.RandomProvider;
 import net.lerariemann.infinity.util.registry.RuleUtils;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LadderBlock;
@@ -18,15 +18,19 @@ import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.CodecHolder;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.surfacebuilder.MaterialRules;
 
+import java.util.List;
+
 import static net.lerariemann.infinity.InfinityMod.MOD_ID;
 
 public class ModMaterialRules {
+
 
     public record RandomBlockStateRule(RandomProvider prov) implements MaterialRules.BlockStateRule
     {
@@ -67,9 +71,14 @@ public class ModMaterialRules {
         public BlockState tryApply(int i, int j, int k) {
             double d = InfinityMethods.sampler.sample(i, j, k);
             d = d - Math.floor(d);
-            BlockState st = Iridescence.getRandomColorBlock(d, str).getDefaultState();
+            BlockState st = getRandomColorBlock(d, str).getDefaultState();
             if(st.contains(Properties.PERSISTENT)) st = st.with(Properties.PERSISTENT, Boolean.TRUE);
             return st;
+        }
+
+        static Block getRandomColorBlock(double d, String str) {
+            List<DyeColor> dyeColors = List.of(DyeColor.RED, DyeColor.ORANGE, DyeColor.YELLOW, DyeColor.LIME, DyeColor.GREEN, DyeColor.CYAN, DyeColor.LIGHT_BLUE, DyeColor.BLUE, DyeColor.PURPLE, DyeColor.MAGENTA, DyeColor.PINK);
+            return Registries.BLOCK.get(new Identifier(dyeColors.get((int)(d * dyeColors.size())).getName() + "_" + str));
         }
 
         record Rule(String str) implements MaterialRules.MaterialRule

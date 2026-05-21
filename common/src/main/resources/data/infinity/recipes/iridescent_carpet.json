@@ -1,9 +1,0 @@
-{
-  "type": "infinity:collision_iridescence",
-  "input": {
-    "item": "infinity:chromatic_carpet"
-  },
-  "output": {
-    "item": "infinity:iridescent_carpet"
-  }
-}

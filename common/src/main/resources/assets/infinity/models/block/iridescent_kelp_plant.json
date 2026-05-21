@@ -1,4 +1,0 @@
-{
-  "parent": "minecraft:block/kelp_plant",
-  "render_type": "minecraft:cutout_mipped"
-}

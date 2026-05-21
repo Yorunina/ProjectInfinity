@@ -1,9 +1,0 @@
-{
-  "type": "infinity:chromatic_coloring",
-  "input": {
-    "tag": "minecraft:wool_carpets"
-  },
-  "output": {
-    "item": "infinity:chromatic_carpet"
-  }
-}

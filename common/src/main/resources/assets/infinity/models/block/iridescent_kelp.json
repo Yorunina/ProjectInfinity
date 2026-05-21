@@ -1,4 +1,0 @@
-{
-  "parent": "minecraft:block/kelp",
-  "render_type": "minecraft:cutout_mipped"
-}

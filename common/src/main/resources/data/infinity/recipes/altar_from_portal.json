@@ -1,9 +1,0 @@
-{
-  "type": "infinity:collision_portal",
-  "input": {
-    "item": "minecraft:lectern"
-  },
-  "output": {
-    "item": "infinity:altar"
-  }
-}

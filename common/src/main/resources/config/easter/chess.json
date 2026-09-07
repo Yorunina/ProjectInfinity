@@ -10,7 +10,7 @@
       ]
     },
     "dawn": false,
-    "star_brightness_night": 0.0,
+    "star_brightness_night": 0.0
   },
   "generator": {
     "type": "minecraft:noise",
